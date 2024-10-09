@@ -9,3 +9,4 @@ use Simcify\Application;
 
 $app = new Application();
 $app->route();
+//
