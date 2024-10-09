@@ -1,0 +1,67 @@
+
+                <div class="modal-body">
+                    <form class="simcy-form" data-parsley-validate="" action="{{ url('Fleet@update') }}" method="POST" loader="true">
+                        <p>A welcome email will be set and recepient will complete setup.</p>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Car No.</label>
+                                <input type="text" class="form-control" placeholder="Car No." value="{{ $car->carno_ }}" name="carno" required>
+                                <input type="hidden" value="{{ csrf_token() }}" name="csrf-token">
+                                <input type="hidden" value="{{ $car->id }}" name="carid">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Number Plate</label>
+                                <input type="text" class="form-control" placeholder="Number Plate" value="{{ $car->carplate }}" name="carplate" required>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Make</label>
+                                <input type="text" class="form-control" placeholder="Make" value="{{ $car->make }}" name="make" required>
+                              </div>
+                            <div class="col-md-6">
+                                <label>Model</label>
+                                <input type="text" class="form-control" placeholder="Model" value="{{ $car->model }}" name="model" required>
+                              </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Model Year</label>
+                                <input type="text" class="form-control" placeholder="Model Year" value="{{ $car->modelyear }}" name="modelyear" required>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="email">Assigned Instructor</label>
+                                <select class="form-control select2-dynamic" name="instructor">
+                                  <option value="">Select instructor</option>
+                                    @if(!empty($instructors))
+                                    @foreach($instructors as $instructor)
+                                     <option value="{{$instructor->id}}" @if( $instructor->id == $car->instructor ) selected @endif>{{$instructor->fname}} {{$instructor->lname}}</option>
+                                    @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary btn-block" type="submit">Save Changes</button>
+                            </div>
+                        </div>
+                      </div>
+                      
+                    </form>
+                </div>
+                <script type="text/javascript">
+                  croppify();
+                  $(".select2-dynamic").select2();
+                </script>

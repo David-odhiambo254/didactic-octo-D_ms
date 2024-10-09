@@ -1,0 +1,117 @@
+    <aside>
+        <div class="slimscroll-menu">
+            <!-- close menu -->
+            <a href="" class="close-aside"><i class="mdi mdi-close-circle-outline"></i></a>
+
+            <!-- Branding -->
+            <div class="side-branding">
+                <a href="{{ url('Dashboard@get') }}">
+                    <img src="{{ url('') }}uploads/app/{{ env('APP_LOGO'); }}" class="img-responsive">
+                </a>
+            </div>
+          
+            <!-- navigation -->
+            <ul>
+                <li class="menu-label">Main</li>
+                @if($user->role == 'superadmin' || $user->role == 'admin' || $user->role == 'staff')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Dashboard@get')}}">
+                      <i class="menu-icon mdi mdi-speedometer"></i>
+                      <span class="menu-title">Dashboard</span>
+                    </a>
+                </li>
+                @endif
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Schedule@get')}}">
+                      <i class="menu-icon mdi mdi-calendar-text"></i>
+                      <span class="menu-title">Scheduling</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Notification@get')}}">
+                      <i class="menu-icon mdi mdi-bell-outline"></i>
+                      <span class="menu-title">Notifications</span>
+                    </a>
+                </li>
+                @if($user->role == 'superadmin' || $user->role == 'admin' || $user->role == 'staff')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Student@get')}}">
+                      <i class="menu-icon mdi mdi-account-convert"></i>
+                      <span class="menu-title">Students</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Instructor@get')}}">
+                      <i class="menu-icon mdi mdi-account-multiple-outline"></i>
+                      <span class="menu-title">Instructors</span>
+                    </a>
+                </li>
+                
+                <li class="menu-label">School</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Fleet@get')}}">
+                      <i class="menu-icon mdi mdi-car-connected"></i>
+                      <span class="menu-title">Fleet</span>
+                    </a>
+                </li>
+                
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{url('Inquiries@get')}}">
+                      <i class="menu-icon mdi mdi-pen"></i>
+                      <span class="menu-title">Inquiries</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Branch@get')}}">
+                      <i class="menu-icon  mdi mdi-access-point-network"></i>
+                      <span class="menu-title">Branches</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Invoice@get')}}">
+                      <i class="menu-icon  mdi mdi-file-chart"></i>
+                      <span class="menu-title">Invoices</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Communication@get')}}">
+                      <i class="menu-icon  mdi mdi-message-text-outline"></i>
+                      <span class="menu-title">Communication</span>
+                    </a>
+                </li>
+                @endif
+                @if($user->role == 'superadmin' || $user->role == 'admin')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Staff@get')}}">
+                      <i class="menu-icon  mdi mdi-account-edit"></i>
+                      <span class="menu-title">Staff</span>
+                    </a>
+                </li>
+                @endif
+
+                <li class="menu-label">Account</li>
+                @if($user->role == 'superadmin' || $user->role == 'admin')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Course@get')}}">
+                      <i class="menu-icon mdi mdi-seal"></i>
+                      <span class="menu-title">Courses</span>
+                    </a>
+                </li>
+                @endif
+                @if(env('SHOW_SCHOOLS_MENU') == 'Enabled' && $user->role == 'superadmin')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('School@get')}}">
+                      <i class="menu-icon mdi mdi-blur-radial"></i>
+                      <span class="menu-title">Schools</span>
+                    </a>
+                </li>
+                @endid
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('Settings@get')}}">
+                      <i class="menu-icon mdi mdi-settings"></i>
+                      <span class="menu-title">Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>

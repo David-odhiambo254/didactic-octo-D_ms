@@ -1,0 +1,62 @@
+
+
+                <div class="modal-body">
+                    <form class="simcy-form" action="{{ url('School@update') }}" method="POST" loader="true" data-parsley-validate="">
+                        
+                        <p>Update school information.</p>
+
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                
+                            </div>
+                        </div>
+                        <label>School Name</label>
+                        <input type="text" class="form-control" name="schoolname" value="{{ $school->name }}" placeholder="School Name" required>
+                        <input type="hidden" name="schoolid" value="{{ $school->id }}">
+                        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Email Address</label>
+                                <input type="email" class="form-control" placeholder="Email Address" name="email" value="{{ $school->email }}" required>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Phone Number</label>
+                                <input type="text" class="form-control" placeholder="Phone Number" value="{{ $school->phone }}" name="phone" required="">
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Address</label>
+                                <input type="text" class="form-control" name="address" value="{{ $school->address }}" placeholder="Address"required>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Status</label>
+                                <select class="form-control" name="status">
+                                    <option value="Active" @if( !empty( $school->status == "Active" ) ) selected @endif >Active</option>
+                                    <option value="Suspended" @if( !empty( $school->status == "Suspended" ) ) selected @endif >Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary btn-block">Save Changes</button>
+                            </div>
+                        </div>
+                      </div>
+                    </form>
+                </div>

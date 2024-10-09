@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?=url('');?>assets/images/favicon.png">
+    <title>Login | Landa Driving School Management System</title>
+
+    <!-- Material design icons -->
+    <link href="<?=url('');?>assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="<?=url('');?>assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?=url('');?>assets/libs/dropify/css/dropify.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="<?=url('');?>assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="<?=url('');?>assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+
+<div class="auth-page">
+        <div class="auth-card card">
+            <div class="auth-logo">
+                <img src="<?=url('');?>assets/images/logo.png" class="img-responsive">
+            </div>
+            <div class="login">
+                <div class="auth-heading mt-15">
+                    <h2>Reset password</h2>
+                    <p>Create your new password, enter the form below to proceed.</p>
+                </div>
+                <div class="auth-form">
+                    <form class="simcy-form" action="{{ url('Auth@reset') }}" data-parsley-validate="" method="POST" loader="true">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Password</label>
+                                    <input type="Password" class="form-control" name="password" data-parsley-required="true" data-parsley-minlength="6" data-parsley-error-message="Password is too short!" id="new-password" placeholder="New Password">
+                                    <input type="hidden" name="csrf-token" value="<?=csrf_token();?>" />
+                                    <input type="hidden" name="token" value="{{ $token }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Confirm Password</label>
+                                    <input type="Password" class="form-control" data-parsley-required="true" data-parsley-equalto="#new-password" data-parsley-error-message="Passwords don't Match!" placeholder="Confirm Password">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-block">Reset Password</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="">
+                  <p>Go to <a href="{{ url('Auth@get') }}">Login.</a></p>
+                </div>
+            </div>
+    </div>
+    <p class="copyright"> &copy; {{ date("Y") }}  {{ env("APP_NAME") }}. All Rights Reserved.</p>
+</div>
+
+
+
+   <script src="<?=url('');?>assets/js/jquery-3.3.1.min.js"></script>
+   <script src="<?=url('');?>assets/js/popper.min.js"></script>
+   <script src="<?=url('');?>assets/libs/bootstrap/js/bootstrap.min.js"></script>
+   <script src="<?=url('');?>assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+   <script src="<?=url('');?>assets/libs/dropify/js/dropify.min.js"></script>
+   <script src="<?=url('');?>assets/js/simcify.min.js"></script>
+   <script src="<?=url('');?>assets/js/app.js"></script>
+</body>
+</html>

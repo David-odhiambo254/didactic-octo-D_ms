@@ -1,0 +1,34 @@
+# Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.code-workspace
+
+# Packages/Modules
+/node_modules/
+/vendor/
+
+# Environment files
+.env
+
+# Linux
+*~
+.Trash-*
+
+# Mac-OS
+.DS_Store
+
+# Microsoft Windows
+Thumbs.db
+ehthumbs.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# NOTE:
+# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
+# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
+# composer.lock

@@ -1,0 +1,122 @@
+
+                        <div class="modal-body">
+                            <form class="simcy-form" action="{{ url('Schedule@update') }}" method="POST" loader="true">
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class Starts</label>
+                                        <input type="text" class="form-control" placeholder="Class Starts" value="{{ date('d F Y - h:i a', strtotime($schedule->start)) }}" name="start" data-date-format="dd MM yyyy - HH:ii p">
+                                        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="scheduleid" value="{{ $schedule->id }}">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class Ends</label>
+                                        <!-- 09 January 2019 - 02:30 am -->
+                                        <input type="text" class="form-control" placeholder="Class Ends" value="{{ date('d F Y - h:i a', strtotime($schedule->end)) }}" name="end" data-date-format="dd MM yyyy - HH:ii p">                                    
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Student</label>
+                                        <select class="form-control select2-dynamic" name="student" required="">
+                                            @if(!empty($students))
+                                            @foreach($students as $student)
+                                            <option value="{{$student->id}}" @if( $schedule->student == $student->id ) selected @endif>{{$student->fname}} {{$student->lname}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Course</label>
+                                        <select class="form-control select2-dynamic" name="course" required="">
+                                        <option value="0">Select Courses*</option>
+                                            @if(!empty($courses))
+                                            @foreach($courses as $course)
+                                            <option value="{{$course->id}}" @if( $schedule->course == $course->id ) selected @endif>{{$course->name}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Instructor</label>
+                                        <select class="form-control select2-dynamic" name="instructor" required="">
+                                            <option value="0">Select Instructor*</option>                                    
+                                            @if(!empty($instructors))
+                                            @foreach($instructors as $instructor)
+                                            <option value="{{$instructor->id}}" @if( $schedule->instructor == $instructor->id ) selected @endif>{{$instructor->fname}} {{$instructor->lname}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class</label>
+                                        <select class="form-control select2-dynamic" name="class_type" required="">
+                                            <option value="Theory" @if( $schedule->class_type == "Theory" ) selected @endif>Theory Class</option>
+                                            <option value="Practical" @if( $schedule->class_type == "Practical" ) selected @endif>Practical Practical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Car</label>
+                                        <select class="form-control select2-dynamic" name="car" required="">
+                                            <option value="0">Select Car*</option>
+                                            @if(!empty($fleets))
+                                            @foreach($fleets as $fleet)
+                                            <option value="{{$fleet->id}}" @if( $schedule->car == $fleet->id ) selected @endif>{{$fleet->make}} {{$fleet->model}} - {{$fleet->carplate}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Status</label>
+                                        <select class="form-control select2-dynamic" name="status" required="">
+                                            <option value="New" @if( $schedule->status == "New" ) selected @endif>New Booking</option>
+                                            <option value="Complete" @if( $schedule->status == "Complete" ) selected @endif>Complete</option>
+                                            <option value="Missed" @if( $schedule->status == "Missed" ) selected @endif>Missed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary btn-block" type="submit">Save Class</button>
+                                    </div>
+                                </div>
+                              </div>
+                            </form>
+                            <p class="text-muted text-center">OR</p>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-danger btn-block send-to-server-click" data="scheduleid:{{ $schedule->id }}|csrf-token:{{ csrf_token() }}" url="{{ url('Schedule@delete') }}" warning-title="Are you sure?" warning-message="This schedule will be deleted completly. Student and instructor will be notified." warning-button="Yes, Delete" loader="true">Delete Class</button>
+                                </div>
+                            </div>
+                        </div>
+                    <script type="text/javascript">    
+                        $('.select2-dynamic').select2();
+                    </script>

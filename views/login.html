@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('') }}uploads/app/{{ env('APP_ICON') }}">
+    <title>Login | Driving School Management System</title>
+
+    <!-- Material design icons -->
+    <link href="{{ url('') }}assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url('') }}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/libs/dropify/css/dropify.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="{{ url('') }}assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="{{ url('') }}assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="auth-page">
+    <div class="auth-card card">
+        <div class="auth-logo">
+            <img src="{{ url('') }}uploads/app/{{ env('APP_LOGO') }}" class="img-responsive">
+        </div>
+        <div class="login">
+            <div class="auth-heading mt-15">
+                <h2>Welcome Back</h2>
+                <p>A beautiful and powerful system crafted specifically for driving schools.</p>
+            </div>
+            <div class="auth-form">
+                <form class="simcy-form" action="{{ url('Auth@signin') }}" data-parsley-validate method="POST" loader="true">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Email Address</label>
+                                <input type="email" class="form-control" name="email" value="demo@simcycreative.com" placeholder="Email Address" required>
+                                <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Password</label>
+                                <input type="password" class="form-control" name="password" value="passqw" placeholder="Password" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary btn-block">Login Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <br>
+                                <!--<button type="submit" href="" class="btn btn-primary btn-block auth-switch" show=".inquiry">Inquiry</button>-->
+            </div>
+            <div class="">
+                <p class="pull-right"><a href="" class="auth-switch" show=".forgot">Forgot Password?</a></p>
+                @if(env('ALLOW_SIGNUP') == 'Enabled')
+                <p><a href="" class="auth-switch" show=".register">Create an account</a></p>
+                @endif
+            </div>
+        </div>
+        <div class="forgot">
+            <div class="auth-heading mt-15">
+                <h2>Forgot password</h2>
+                <p>Don't worry if you forgot your password, enter your email and you can reset it.</p>
+            </div>
+            <div class="auth-form">
+                <form class="simcy-form" action="{{ url('Auth@forgot') }}" method="POST" loader="true">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Email Address</label>
+                                <input type="email" class="form-control" name="email" placeholder="Email Address" required>
+                                <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary btn-block">Reset Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="">
+                <p>Remembered your password? <a href="" class="auth-switch" show=".login">Login Now</a></p>
+            </div>
+        </div>
+        @if(env('ALLOW_SIGNUP') == 'Enabled')
+        <div class="register">
+            <div class="auth-heading mt-15">
+                <h2>Create an account</h2>
+                <p>A beautiful and powerful system crafted specifically for driving schools.</p>
+            </div>
+            <div class="auth-form">
+                <form class="simcy-form" action="{{ url('Auth@signup') }}" data-parsley-validate method="POST" loader="true">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>First Name</label>
+                                <input type="text" class="form-control" name="fname" placeholder="First Name" required>
+                                <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Last Name</label>
+                                <input type="text" class="form-control" name="lname" placeholder="Last Name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Driving School Name</label>
+                                <input type="text" class="form-control" name="school" placeholder="Driving School Name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Email Address</label>
+                                <input type="email" class="form-control" name="email" placeholder="Email Address" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Password</label>
+                                <input type="password" class="form-control" name="password" placeholder="Password" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary btn-block">Create Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="">
+                <p>Already have an account? <a href="" class="auth-switch" show=".login">Login Now</a></p>
+            </div>
+        </div>
+        @endif
+        <!--<div class="inquiry">-->
+        <!--    <div class="auth-heading mt-15">-->
+        <!--        <h2>Leave a message</h2>-->
+        <!--        <p>Got a question? We'd be happy to get back!</p>-->
+        <!--    </div>-->
+        <!--    <div class="auth-form">-->
+        <!--        <form class="simcy-form" action="" data-parsley-validate method="POST" loader="true">-->
+        <!--            <div class="form-group">-->
+        <!--                <div class="row">-->
+        <!--                    <div class="col-md-12">-->
+        <!--                        <label>First Name</label>-->
+        <!--                        <input type="text" class="form-control" name="fname" placeholder="First Name" required>-->
+        <!--                        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="form-group">-->
+        <!--                <div class="row">-->
+        <!--                    <div class="col-md-12">-->
+        <!--                        <label>Email Address</label>-->
+        <!--                        <input type="email" class="form-control" name="email" placeholder="Email Address" required>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="form-group">-->
+        <!--                <div class="row">-->
+        <!--                    <div class="col-md-12">-->
+        <!--                        <label>Subject</label>-->
+        <!--                        <input type="text" class="form-control" name="subject" placeholder="Your topic" required>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="form-group">-->
+        <!--                <div class="row">-->
+        <!--                    <div class="col-md-12">-->
+        <!--                        <label>Message</label>-->
+        <!--                        <textarea id="message" class="form-control" name="message" placeholder="Your message" rows="6" required></textarea>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="form-group">-->
+        <!--                <div class="row">-->
+        <!--                    <div class="col-md-12">-->
+        <!--                        <button class="btn btn-primary btn-block">Send</button>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </form>-->
+        <!--    </div>-->
+        <!--    <div class="">-->
+        <!--        <p> <a href="" class="auth-switch" show=".login">Back to Login </a></p>-->
+        <!--    </div>-->
+        <!--</div>-->
+    </div>
+    <p class="copyright"> &copy; {{ date("Y") }} {{ env("APP_NAME") }}. All Rights Reserved.</p>
+</div>
+
+<script src="{{ url('') }}assets/js/jquery-3.3.1.min.js"></script>
+<script src="{{ url('') }}assets/js/popper.min.js"></script>
+<script src="{{ url('') }}assets/libs/bootstrap/js/bootstrap.min.js"></script>
+<script src="{{ url('') }}assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="{{ url('') }}assets/libs/dropify/js/dropify.min.js"></script>
+<script src="{{ url('') }}assets/js/simcify.min.js"></script>
+<script src="{{ url('') }}assets/js/app.js"></script>
+</body>
+</html>

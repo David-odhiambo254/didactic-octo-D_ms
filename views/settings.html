@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('') }}uploads/app/{{ env('APP_ICON'); }}">
+    <title>Settings | Driving School Management System</title>
+
+    <!-- Material design icons -->
+
+    <link href="{{ url('') }}assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url('') }}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="{{ url('') }}assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="{{ url('') }}assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- sidebar -->
+    @include("includes/sidebar")
+
+    <!-- header -->
+    @include("includes/header")
+
+    <!-- main content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h3>Settings</h3>
+        </div>
+
+
+        <!-- page content -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card settings-card">
+
+                        <ul class="nav nav-tabs">
+                          <li><a data-toggle="tab" href="#profile" class="active">Profile</a></li>
+                          @if($user->role == 'admin' || $user->role == 'superadmin')
+                          <li><a data-toggle="tab" href="#school">School</a></li>
+                          <li><a data-toggle="tab" href="#reminders">Reminders</a></li>
+                          @endif
+                          @if($user->role == 'superadmin')
+                          <li><a data-toggle="tab" href="#system">System</a></li>
+                          @endif
+                          <li><a data-toggle="tab" href="#security">Security</a></li>
+                        </ul>
+
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="tab-content">
+                                    <!-- profile  -->
+                                  <div id="profile" class="tab-pane fade in show active">
+                                    <p>Update your personal profile here.</p>
+                                  <form class="simcy-form"action="<?=url("Settings@updateprofile");?>" data-parsley-validate="" loader="true" method="POST" enctype="multipart/form-data">
+
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Profile picture</label>
+                                                  @if( !empty($user->avatar) )
+                                                  <input type="file" name="avatar" class="croppie" default="{{ url('') }}uploads/avatar/{{ $user->avatar }}" crop-width="200" crop-height="200" accept="image/*">
+                                                  @else
+                                                  <input type="file" name="avatar" class="croppie" crop-width="200" crop-height="200" accept="image/*">
+                                                  @endif
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>First name</label>
+                                                  <input type="text" class="form-control" name="fname" value="{{ $user->fname }}" placeholder="First name" required>
+                                                  <input type="hidden" name="csrf-token" value="{{ csrf_token() }}" />
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Last name</label>
+                                                  <input type="text" class="form-control" name="lname" value="{{ $user->lname }}" placeholder="Last name" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Email address</label>
+                                                  <input type="email" class="form-control" name="email" value="{{ $user->email }}" placeholder="Email address" required>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Phone number</label>
+                                                  <input type="text" class="form-control" name="phone" value="{{ $user->phone }}" placeholder="Phone number" required="">
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Address</label>
+                                                  <input type="text" class="form-control" name="address" value="{{ $user->address }}" placeholder="Address">
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Gender</label>
+                                                  <select class="form-control" name="gender" required="">
+                                                    <option value="Male" @if( $user->gender == "Male" ) selected @endif>Male</option>
+                                                    <option value="Female" @if( $user->gender == "Female" ) selected @endif>Female</option>
+                                                  </select>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Date of Birth</label>
+                                                  @if( $user->date_of_birth == '0000-00-00' )
+                                                  <input type="text" class="form-control datepicker" name="date_of_birth" placeholder="Date of Birth" required="">
+                                                  @else
+                                                  <input type="text" class="form-control datepicker" name="date_of_birth" value="{{ date('m/d/Y', strtotime($user->date_of_birth)) }}" placeholder="Date of Birth" required="">
+                                                  @endif
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12 text-right">
+                                                  <button class="btn btn-primary" type="submit">Save Changes</button>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </form>
+                                  </div>
+                                  @if($user->role == 'admin' || $user->role == 'superadmin')
+
+                                  <!-- School  -->
+                                  <div id="school" class="tab-pane fade">
+                                    <p>Update your school information here. This information will be used for billing and reminders.</p>
+                                    <form class="simcy-form"action="<?=url("Settings@updatecompany");?>" data-parsley-validate="" loader="true" method="POST">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>School name</label>
+                                                    <input type="text" class="form-control" name="name" placeholder="School name" value="{{ $school->name }}" required>
+                                                    <input type="hidden" name="csrf-token" value="{{ csrf_token() }}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Email address</label>
+                                                    <input type="email" class="form-control" name="email" placeholder="Email address" value="{{ $school->email }}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Phone number</label>
+                                                    <input type="text" class="form-control" name="phone" placeholder="Phone number" value="{{ $school->phone }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Address</label>
+                                                    <input type="text" class="form-control" name="address" placeholder="Address" value="{{ $school->address }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Currency</label>
+                                                  <select class="form-control select2" name="currency" required="">
+                                                    @foreach ( $currencies as $currency )
+                                                    <option value="{{ $currency->code }}" @if( $currency->code == $school->currency ) selected @endif>{{ $currency->name }} - {{ $currency->code }}</option>
+                                                    @endforeach
+                                                  </select>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <div class="row">
+                                              <div class="col-md-12">
+                                                  <label>Time Zone</label>
+                                                  <select class="form-control select2" name="timezone" required="">
+                                                    @foreach ( $timezones as $timezone )
+                                                    <option value="{{ $timezone->zone }}" @if( $timezone->zone == $school->timezone ) selected @endif>{{ $timezone->name }}</option>
+                                                    @endforeach
+                                                  </select>
+                                              </div>
+                                          </div>
+                                      </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="hidden" name="multibooking" value="Disabled" />
+                                                    @if ( $school->multibooking == "Enabled" ) 
+                                                    <input type="checkbox" class="switch" name="multibooking" value="Enabled" checked />
+                                                    @else
+                                                    <input type="checkbox" class="switch" name="multibooking" value="Enabled" />
+                                                    @endif
+                                                    <label>Allow multi booking on practical classes.</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input type="hidden" name="class_sms_notifications" value="Disabled" />
+                                                    @if ( $school->class_sms_notifications == "Enabled" ) 
+                                                    <input type="checkbox" class="switch" name="class_sms_notifications" value="Enabled" checked />
+                                                    @else
+                                                    <input type="checkbox" class="switch" name="class_sms_notifications" value="Enabled" />
+                                                    @endif
+                                                    <label>Send SMS notifications on schedule creation & cancellation.</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12 text-right">
+                                                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                  </div>
+
+                                  <!-- Reminders  -->
+                                  <div id="reminders" class="tab-pane fade">
+                                    <p>Payment reminders are for students who have not cleared fees while class reminders are for notifing upcoming classes.</p>
+                                    <form class="simcy-form"action="<?=url("Settings@updatereminders");?>" data-parsley-validate="" loader="true" method="POST">
+                                      <input type="hidden" name="csrf-token" value="{{ csrf_token() }}" />
+                                      <div class="form-group">
+                                        @if( $school->payment_reminders == "On" )
+                                        <input type="checkbox" class="switch" name="payment_reminders" value="On" checked />
+                                        @else
+                                        <input type="checkbox" class="switch" name="payment_reminders" value="Off" />
+                                        @endif
+                                        <label for="payment-reminders">Enable payment reminders</label>
+                                      </div>
+                                      <div class="form-group">
+                                        @if( $school->class_reminders == "On" )
+                                        <input type="checkbox" class="switch" name="class_reminders" value="On" checked />
+                                        @else
+                                        <input type="checkbox" class="switch" name="class_reminders" value="Off" />
+                                        @endif
+                                        <label for="class-reminders">Enable class reminders</label>
+                                      </div>
+
+                                      <div class="panel-group reminders-holder" id="accordion">
+                                      @if( !empty($reminders) )
+                                      @foreach ($reminders as $index => $reminder)
+                                            <!-- reminder -->
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                  @if ( $index > 0 )
+                                                    <span class="delete-reminder remove-parent" parent=".panel" title="Delete reminder"><i class="mdi mdi-delete"></i></span>
+                                                  @endif
+                                                    <h4 class="panel-title"><a data-parent="#accordion" data-toggle="collapse" href="#collapse{{ $index + 1 }}">Reminder #<span class="count">{{ $index + 1 }}</span></a></h4>
+                                                </div>
+                                                <div class="panel-collapse collapse in" id="collapse{{ $index + 1 }}">
+                                                    <div class="panel-body m-15">
+                                                        <div class="remider-item">
+                                                            <div class="form-group">
+                                                                <div class="row">
+                                                                  <div class="col-md-6">
+                                                                      <label>Reminder Type</label> 
+                                                                      <select class="form-control" name="type[]" required="">
+                                                                          <option value="payment" @if( $reminder->type == "payment" ) selected @endif>Payment</option>
+                                                                          <option value="class" @if( $reminder->type == "class" ) selected @endif>Class</option>
+                                                                      </select>
+                                                                  </div>
+                                                                  <div class="col-md-6">
+                                                                      <label>Send Via</label> 
+                                                                      <select class="form-control send_via" name="send_via[]" required="">
+                                                                          <option value="email" @if( $reminder->send_via == "email" ) selected @endif>Email</option>
+                                                                          <option value="sms" @if( $reminder->send_via == "sms" ) selected @endif>SMS</option>
+                                                                      </select>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <label>Days</label>
+                                                                        <input type="number" class="form-control"  name="days[]" placeholder="Days" value="{{ $reminder->days }}" required="" min="0" required="">
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <label>Timing</label> 
+                                                                        <select class="form-control" name="timing[]" required="">
+                                                                            <option value="before_due" @if( $reminder->timing == "before_due" ) selected @endif>Before Due Date</option>
+                                                                            <option value="after_due" @if( $reminder->timing == "after_due" ) selected @endif>After Due Date</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            @if( $reminder->send_via == "sms" )
+                                                            <div class="form-group email-subject" style="display: none;">
+                                                            @else
+                                                            <div class="form-group email-subject">
+                                                            @endif
+                                                                  <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <label>Email subject</label> 
+                                                                        @if( $reminder->send_via == "sms" )
+                                                                        <input class="form-control" name="subject[]" placeholder="Email subject" type="text" value="{{ $reminder->subject }}">
+                                                                        @else
+                                                                        <input class="form-control" name="subject[]" placeholder="Email subject" required type="text" value="{{ $reminder->subject }}">
+                                                                        @endif
+                                                                    </div>
+                                                               </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                  <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <label>Message</label> 
+                                                                        <textarea class="form-control" name="message[]" required rows="10">{{ $reminder->message }}</textarea>
+                                                                    <p class="help">Supported tags  for Payment: <code>[firstname]</code>, <code>[lastname]</code>, <code>[amountdue]</code>, <code>[duedate]</code> & <code>[course]</code>. Class: <code>[firstname]</code>, <code>[lastname]</code>, <code>[course]</code>, <code>[class]</code>, <code>[classdate]</code>, <code>[classtime]</code> & <code>[instructorname]</code> </p>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                      @endforeach
+                                      @else
+                                            <!-- reminder -->
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title"><a data-parent="#accordion" data-toggle="collapse" href="#collapse1">Reminder #<span class="count">1</span></a></h4>
+                                                </div>
+                                                <div class="panel-collapse collapse in" id="collapse1">
+                                                    <div class="panel-body m-15">
+                                                        <div class="remider-item">
+                                                            <div class="form-group">
+                                                                <div class="row">
+                                                                  <div class="col-md-6">
+                                                                      <label>Reminder Type</label> 
+                                                                      <select class="form-control" name="type[]" required="">
+                                                                          <option value="Payment">Payment</option>
+                                                                          <option value="Class">Class</option>
+                                                                      </select>
+                                                                  </div>
+                                                                  <div class="col-md-6">
+                                                                      <label>Send Via</label> 
+                                                                      <select class="form-control send_via" name="send_via[]" required="">
+                                                                          <option value="email">Email</option>
+                                                                          <option value="sms">SMS</option>
+                                                                      </select>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <label>Days</label>
+                                                                        <input type="number" class="form-control"  name="days[]" placeholder="Days" value="1" required="" min="0" required="">
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <label>Timing</label> 
+                                                                        <select class="form-control" name="timing[]" required="">
+                                                                            <option value="before_due">Before Due Date</option>
+                                                                            <option value="after_due">After Due Date</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group email-subject">
+                                                                  <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <label>Email subject</label> 
+                                                                        <input class="form-control" name="subject[]" placeholder="Email subject" required type="text" value="Payment reminder">
+                                                                    </div>
+                                                               </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                  <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <label>Message</label> 
+                                                                        <textarea class="form-control" name="message[]" required rows="10">Hello [firstname],
+
+We hope you are doing well.
+We are am writing to remind you that your payment of $[amountdue] is due on [duedate].
+Please settle as soon as possible to avoid class interruption 
+
+Cheers!
+Landa Team
+                                    </textarea>
+                                                                    <p class="help">Supported tags  for Payment: <code>[firstname]</code>, <code>[lastname]</code>, <code>[amountdue]</code>, <code>[duedate]</code> & <code>[course]</code>. Class: <code>[firstname]</code>, <code>[lastname]</code>, <code>[course]</code>, <code>[class]</code>, <code>[classdate]</code>, <code>[classtime]</code> & <code>[instructorname]</code> </p>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                      @endif
+
+
+                                      </div>
+                                      <div class="form-group mt-15">
+                                        <button class="btn btn-primary pull-right ml-5">Save Changes</button>
+                                        <button class="btn btn-default pull-right btn-icon add-reminder" type="button">
+                                            <i class="mdi mdi-plus-circle-outline"></i> Add Reminder</button>
+                                      </div>
+                                    </form>
+                                  </div>
+                                  @endif
+                                  @if($user->role == 'superadmin')
+                                  <!-- System  -->
+                                  <div id="system" class="tab-pane fade">
+                                    <p>Update system configuration here.</p>
+                                    <form class="simcy-form"action="<?=url("Settings@updatesystem");?>" data-parsley-validate="" loader="true" method="POST" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>System name</label>
+                                                    <input type="text" class="form-control system-name" placeholder="System name" name="APP_NAME" value="{{ env('APP_NAME'); }}" required>
+                                                    <input type="hidden" name="csrf-token" value="{{ csrf_token() }}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>System Logo </label>
+                                                    <input type="file" name="APP_LOGO" class="croppie" default="{{ url('') }}uploads/app/{{ env('APP_LOGO'); }}" crop-width="541" crop-height="152" accept="image/*">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>System favicon/icon </label>
+                                                    <input type="file" name="APP_ICON" class="croppie" default="{{ url('') }}uploads/app/{{ env('APP_ICON'); }}" crop-width="152" crop-height="152" accept="image/*">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="divider"></div>
+                                    <p class="mt-40">Update Email SMTP settings, this is important for sending emails.</p>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    @if ( env('SMTP_AUTH') == "Enabled" ) 
+                                                    <input type="checkbox" class="switch" name="SMTP_AUTH" value="true" checked />
+                                                    @else
+                                                    <input type="checkbox" class="switch" name="SMTP_AUTH" value="true" />
+                                                    @endif
+                                                    <label>Use SMTP Authentication.</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>SMTP Username</label>
+                                                    <input type="text" class="form-control" name="MAIL_USERNAME" placeholder="SMTP Username" value="{{ env('MAIL_USERNAME'); }}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>SMTP Host</label>
+                                                    <input type="text" class="form-control" placeholder="SMTP Host" name="SMTP_HOST" value="{{ env('SMTP_HOST'); }}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>SMTP Port</label>
+                                                    <input type="text" class="form-control" placeholder="SMTP Port" name="SMTP_PORT" value="{{ env('SMTP_PORT'); }}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>SMTP Password</label>
+                                                    <input type="password" class="form-control" placeholder="SMTP Password" name="SMTP_PASSWORD" value="{{ env('SMTP_PASSWORD'); }}" autocomplete="false" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>SMTP Encryption</label>
+                                                    <input type="text" class="form-control" placeholder="SMTP Encryption" name="MAIL_ENCRYPTION" value="{{ env('MAIL_ENCRYPTION'); }}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="divider"></div>
+
+                                    <p class="mt-40">SMS settings.</p>
+                                    <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                  <label>Default SMS Gateway</label>
+                                                  <select class="form-control" name="DEFAULT_SMS_GATEWAY">
+                                                    <option value="africastalking" @if ( env('DEFAULT_SMS_GATEWAY') == 'africastalking' ) selected @endif>Africa's Talking</option>
+                                                    <option value="twilio" @if ( env('DEFAULT_SMS_GATEWAY') == 'twilio' ) selected @endif>Twilio</option>
+                                                  </select>
+                                                </div>
+                                            </div>
+                                      </div>
+                                      @if ( env('DEFAULT_SMS_GATEWAY') == 'africastalking' )
+                                    <div class="form-group africastalking">
+                                      @else
+                                    <div class="form-group africastalking" style="display: none;">
+                                      @endif
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                  <label>Africa's Talking Username</label>
+                                                  <input type="text" name="AFRICASTALKING_USERNAME" value="{{ env('AFRICASTALKING_USERNAME') }}" class="form-control" placeholder="Africa's Talking Username">
+                                                </div>
+                                            </div>
+                                      </div>
+                                      @if ( env('DEFAULT_SMS_GATEWAY') == 'africastalking' )
+                                    <div class="form-group africastalking">
+                                      @else
+                                    <div class="form-group africastalking" style="display: none;">
+                                      @endif
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Africa's Talking API KEY</label>
+                                                    <input type="text" name="AFRICASTALKING_KEY" value="{{ env('AFRICASTALKING_KEY') }}" class="form-control" placeholder="Africa's Talking API KEY">
+                                                </div>
+                                            </div>
+                                      </div>
+                                      @if ( env('DEFAULT_SMS_GATEWAY') == 'africastalking' )
+                                    <div class="form-group africastalking">
+                                      @else
+                                    <div class="form-group africastalking" style="display: none;">
+                                      @endif
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                  <label>Africa's Talking SenderId</label>
+                                                  <input type="text" name="AFRICASTALKING_SENDERID"  value="{{ env('AFRICASTALKING_SENDERID') }}" class="form-control" placeholder="Africa's Talking SenderId">
+                                                </div>
+                                            </div>
+                                      </div>
+
+                                      @if ( env('DEFAULT_SMS_GATEWAY') == 'twilio' )
+                                    <div class="form-group twilio">
+                                      @else
+                                    <div class="form-group twilio" style="display: none;">
+                                      @endif
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Twilio SID</label>
+                                                    <input type="text" name="TWILIO_SID" value="{{ env('TWILIO_SID') }}" class="form-control" placeholder="Twilio SID">
+                                                </div>
+                                            </div>
+                                      </div>
+                                      @if ( env('DEFAULT_SMS_GATEWAY') == 'twilio' )
+                                    <div class="form-group twilio">
+                                      @else
+                                    <div class="form-group twilio" style="display: none;">
+                                      @endif
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Twilio AuthToken</label>
+                                                    <input type="text" name="TWILIO_AUTHTOKEN" value="{{ env('TWILIO_AUTHTOKEN') }}" class="form-control" placeholder="Twilio AuthToken">
+                                                </div>
+                                            </div>
+                                      </div>
+                                      @if ( env('DEFAULT_SMS_GATEWAY') == 'twilio' )
+                                    <div class="form-group twilio">
+                                      @else
+                                    <div class="form-group twilio" style="display: none;">
+                                      @endif
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Twilio Phone Number</label>
+                                                    <input type="text" name="TWILIO_PHONENUMBER"  value="{{ env('TWILIO_PHONENUMBER') }}" class="form-control" placeholder="Twilio Phone Number">
+                                                </div>
+                                            </div>
+                                      </div>
+
+                                    <p class="mt-40">Addittional settings.</p>
+                                      <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                      <input type="checkbox" name="SHOW_SCHOOLS_MENU" class="switch" name="smtp" value="Enabled" @if(env('SHOW_SCHOOLS_MENU') == 'Enabled') checked @endif />
+                                                      <label>Show schools menu.</label>
+                                                </div>
+                                            </div>
+                                      </div>  
+                                      <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                      <input type="checkbox" name="ALLOW_SIGNUP" class="switch" name="allow_signup" value="Enabled" @if(env('ALLOW_SIGNUP') == 'Enabled') checked @endif />
+                                                      <label>Allow new driving schools to create accounts.</label>
+                                                </div>
+                                            </div>
+                                      </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12 text-right">
+                                                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                  </div>
+                                  @endif
+                                  <!-- Security  -->
+                                  <div id="security" class="tab-pane fade">
+                                    <p>Update your password here.</p>
+
+                                    <form class="simcy-form"action="{{ url('Settings@updatepassword') }}" data-parsley-validate="" loader="true" method="POST">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Current password</label>
+                                                    <input type="password" class="form-control" name="current" required placeholder="Current password">
+                                                    <input type="hidden" name="csrf-token" value="{{ csrf_token() }}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>New password</label>
+                                                    <input type="password" class="form-control" name="password" data-parsley-required="true" data-parsley-minlength="6" data-parsley-error-message="Password is too short!" id="newPassword" placeholder="New password">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Confirm password</label>
+                                                    <input type="password" class="form-control" data-parsley-required="true" data-parsley-equalto="#newPassword" data-parsley-error-message="Passwords don't Match!" placeholder="Confirm password">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12 text-right">
+                                                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                  </div>
+
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
+        
+        </div>
+    </div>
+
+    <!-- footer -->
+    @include("includes/footer")
+
+
+    <!-- scripts -->
+   <script type="text/javascript">
+     school = '{{ $school->name }}';
+   </script>
+   <script src="{{ url('') }}assets/js/jquery-3.3.1.min.js"></script>
+   <script src="{{ url('') }}assets/js/popper.min.js"></script>
+   <script src="{{ url('') }}assets/libs/bootstrap/js/bootstrap.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+   <script src="{{ url('') }}assets/js/simcify.min.js"></script>
+   <script src="{{ url('') }}assets/js/app.js"></script>
+</body>
+</html>

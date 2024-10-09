@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('') }}uploads/app/{{ env('APP_ICON'); }}">
+    <title>{{ $course->name }} | Landa Driving School Management System</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" />
+    <!-- Material design icons -->
+    <link href="{{ url('') }}assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/libs/jquery-ui/jquery-ui.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url('') }}assets/libs/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/libs/fullcalendar/fullcalendar.min.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="{{ url('') }}assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="{{ url('') }}assets/css/calendar.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- sidebar -->
+    @include("includes/sidebar")
+
+    <!-- header -->
+    @include("includes/header")
+
+    <!-- main content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h3>{{$course->name}}</h3>
+        </div>
+
+
+        <!-- page content -->
+        <div class="row">
+
+            <div class="page-rightbar profile-right-bar p-0">
+                <div class="slimscroll-profile-menu">
+                    <div class="user-profile-options course-options">
+                        <div class="dropdown">
+                                <div class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class=" mdi mdi-account-edit"></i> 
+                                </div>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                                      <li role="presentation"><a role="menuitem" class="fetch-display-click" data="courseid:{{ $course->id }}|csrf-token:{{ csrf_token() }}" url="<?=url('Course@updateview');?>" holder=".update-holder" modal="#update" href=""> <i class="mdi mdi-pencil"></i> Edit</a></li>
+                                      <li role="presentation"><a class="send-to-server-click" data="courseid:{{ $course->id }}|csrf-token:{{ csrf_token() }}" url="{{ url('Course@delete') }}" warning-title="Are you sure?" warning-message="This course and all it's data will be deleted." warning-button="Continue" loader="true"><i class="mdi mdi-delete"></i>Delete</a></li>
+                                </ul>
+                        </div>
+                    </div>
+                    <div class="course-image">
+                            <img src="<?=url("");?>uploads/courses/{{$course->image }}">
+                    </div>
+                    <div class="user-profile-info">
+                        <h5>{{$course->name}}</h5>
+                    </div>
+                    <div class="profile-more-section">
+                        <ul class="nav nav-tabs">
+                          <li><a data-toggle="tab" href="#account" class="active">Course Info</a></li>
+                          <li><a data-toggle="tab" href="#activity">Instructor</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div id="account" class="tab-pane fade in show active">
+                            <table>
+                                <tr>
+                                    <td class="profile-item-title">Duration</td>
+                                    <td class="profile-item-value">{{ $course->duration }} {{ $course->period }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">Cost</td>
+                                    <td class="profile-item-value">{{ money($course->price) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">Practical</td>
+                                    <td class="profile-item-value">{{ $course->practical_classes }} Classes</td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">Theory</td>
+                                    <td class="profile-item-value">{{ $course->theory_classes }} Classes</td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">Students</td>
+                                    <td class="profile-item-value">{{ $total }}</td>
+                                </tr>
+                            </table>
+                          </div>
+                          <div id="activity" class="tab-pane fade">
+                                <div class="instructors-list">
+
+                                    @if (!empty($courseinstructors))
+                                    @foreach ($courseinstructors as $instructor)
+                                    <!-- instructor -->
+                                    <div class="instructor-item">
+                                        <div class="instructor-item-img">
+                                            @if( !empty($instructor->avatar) )
+                                            <img src="{{ url('') }}uploads/avatar/{{ $instructor->avatar }}">
+                                            @else
+                                            <img src="{{ url('') }}assets/images/avatar.png">
+                                            @endif
+                                        </div>
+                                        <div class="instructor-item-info">
+                                            <h6><a href="{{ url('') }}profile/{{$instructor->id}}">{{$instructor->fname }} {{$instructor->lname }}</a></h6>
+                                            <p>{{$instructor->email }}</p>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                    @else
+                                    <p class="text-muted">No Instructors</p>
+                                    @endif
+
+                                </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="halfpage-content">
+                
+                <!-- courses -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                                <h5>Students</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive mt-15">
+                                <table class="table table-striped mb-0" id="data-table">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Classes</th>
+                                                <th>Started</th>
+                                                <th>Completed</th>
+                                                <th>Progress</th>
+                                                <th>Schedule</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                             @if(!empty($enrolledstudents))
+                                                 @foreach($enrolledstudents as $index => $student)
+                                                    <tr>
+                                                        <th scope="row">{{ $index + 1 }}</th>
+                                                        <td><a href="{{url('Profile@get',['userid'=>$student->id])}}"><strong>{{ $student->fname}} {{ $student->lname}}</strong></a></td>
+                                                        <td>{{ $student->total_theory + $student->total_practical }}</td>
+                                                        <td>{{ date('d M Y', strtotime($student->created_at)) }}</td>
+                                                        @if ( !empty($student->completed_on) )
+                                                        <td>{{ date('d M Y', strtotime($student->completed_on)) }}</td>
+                                                        @else
+                                                        <td>Ongoing</td>
+                                                        @endif
+                                                        <td><span class="badge badge-success">{{ round((($student->completed_theory + $student->completed_practical) / ($student->total_theory + $student->total_practical)) * 100) }}%</span></td>
+                                                        <td><a class="btn btn-primary btn-sm" href="{{url('Schedule@get')}}?filter=student&filterid={{ $student->id }}">Schedule</a></td>
+                                                    </tr>   
+                                             @endforeach 
+                                            @else
+                                                <tr><td colspan="7" class="text-center">It's empty here.</td></tr>
+                                            @endif     
+                                            </tbody>
+                                        </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scheduling -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="pull-right schedule-map">
+                                <span> <i class=" mdi mdi-circle text-danger"></i> Missed </span>
+                                <span> <i class=" mdi mdi-circle text-success"></i> Practical </span>
+                                <span> <i class=" mdi mdi-circle text-primary"></i> Theory </span>
+                                <span> <i class=" mdi mdi-circle text-muted"></i> Complete </span>
+                            </p>
+                                <h5>{{$course->name}} Schedule</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id='calendar'>
+                                <div class="loader-demo-box">
+                                    <div class="circle-loader"></div>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- footer -->
+    @include("includes/footer")
+
+
+        <!-- Add class -->
+        <div class="modal right fade" id="scheduleclass" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                            <h4 class="modal-title" id="myModalLabel2">Schedule Class</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="simcy-form" action="{{ url('Schedule@create') }}" method="POST" loader="true">
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class Starts</label>
+                                        <input type="text" class="form-control" placeholder="Class Starts" name="start" data-date-format="dd MM yyyy - HH:ii p">
+                                        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="course" value="{{$course->id}}">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class Ends</label>
+                                        <input type="text" class="form-control" placeholder="Class Ends" name="end" data-date-format="dd MM yyyy - HH:ii p">                                    
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Student</label>
+                                        <select class="form-control select2" name="student" required="">
+                                            @if(!empty($students))
+                                            @foreach($students as $student)
+                                            <option value="{{$student->id}}">{{$student->fname}} {{$student->lname}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Instructor</label>
+                                        <select class="form-control select2" name="instructor" required="">
+                                            <option value="0">Select Instructor*</option>                                    
+                                            @if(!empty($instructors))
+                                            @foreach($instructors as $instructor)
+                                            <option value="{{$instructor->id}}" id="{{$instructor->course}}">{{$instructor->fname}} {{$instructor->lname}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class</label>
+                                        <select class="form-control select2" name="class_type" required="">
+                                            <option value="Theory">Theory Class</option>
+                                            <option value="Practical">Practical Practical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Car</label>
+                                        <select class="form-control select2" name="car" required="">
+                                            <option value="0">Select Car*</option>
+                                            @if(!empty($fleets))
+                                            @foreach($fleets as $fleet)
+                                            <option value="{{$fleet->id}}">{{$fleet->make}} {{$fleet->model}} ( {{$fleet->carplate}} ) </option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Status</label>
+                                        <select class="form-control select2" name="status" required="">
+                                            <option value="New">New Booking</option>
+                                            <option value="Complete">Complete</option>
+                                            <option value="Missed">Missed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary btn-block" type="submit">Save Class</button>
+                                    </div>
+                                </div>
+                              </div>
+                            </form>
+                        </div>
+
+                    </div><!-- modal-content -->
+                </div><!-- modal-dialog -->
+            </div>
+        <!-- end Add class -->
+
+    <!-- scheduleupdate -->
+    <div class="modal right fade" id="scheduleupdate" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Scheduling</h4>
+                </div>
+                <div class="scheduleupdate-holder"></div>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div>
+    <!-- end scheduleupdate -->
+
+
+    <!-- update -->
+    <div class="modal right fade" id="update" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Edit </h4>
+                </div>
+                <div class="update-holder"></div>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div>
+    <!-- end update -->
+
+
+
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.flash.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
+    @if(!empty($enrolledstudents))
+    <script>
+        $(document).ready(function() {
+            $('#data-table').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5'
+                ]
+            });
+        });
+    </script>
+    @endif
+   <script src="{{ url('') }}assets/js/popper.min.js"></script>
+   <script src="{{ url('') }}assets/libs/bootstrap/js/bootstrap.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+   <script src="{{ url('') }}assets/libs/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+   <script src="{{ url('') }}assets/libs/fullcalendar/moment.min.js"></script>
+   <script src="{{ url('') }}assets/libs/fullcalendar/fullcalendar.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-ui/jquery-ui.min.js"></script>
+   <script src="{{ url('') }}assets/js/simcify.min.js"></script>
+   <script src="{{ url('') }}assets/js/schedule.js"></script>
+   <script src="{{ url('') }}assets/js/app.js"></script>
+   <script type="text/javascript">
+       // Jquery start
+    $(document).ready(function() {
+        $('.slimscroll-profile-menu').slimscroll({
+            height: 'auto',
+            position: 'right',
+            size: "3px",
+            color: '#9ea5ab',
+            wheelStep: 5,
+            touchScrollStep: 50
+        });
+    });
+
+    var filter = 'course';
+    var filterid = '{{ $course->id }}';
+    var schedulesUrl = '{{ url("Schedule@fetch") }}';
+    var schedulesUpdateView = '{{ url("Schedule@updateview") }}';
+</script>
+</body>
+</html>

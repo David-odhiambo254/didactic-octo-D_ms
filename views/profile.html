@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('') }}uploads/app/{{ env('APP_ICON'); }}">
+    <title>{{ $profile->fname }} {{ $profile->lname }} | Landa Driving School Management System</title>
+
+    <!-- Material design icons -->
+    <link href="{{ url('') }}assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/libs/jquery-ui/jquery-ui.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url('') }}assets/libs/datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/libs/fullcalendar/fullcalendar.min.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="{{ url('') }}assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="{{ url('') }}assets/css/calendar.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/css/style.css" rel="stylesheet">
+    <link href="{{ url('') }}assets/css/halfpage.css" rel="stylesheet">
+</head>
+<body>
+    <!-- sidebar -->
+    @include("includes/sidebar")
+
+    <!-- header -->
+    @include("includes/header")
+
+    <!-- main content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h3>{{ $profile->fname }} {{ $profile->lname }}</h3>
+        </div>
+
+
+        <!-- page content -->
+        <div class="row">
+
+            <div class="page-rightbar profile-right-bar p-0">
+                <div class="slimscroll-profile-menu">
+                    <div class="user-profile-options">
+                        <div class="dropdown">
+                                <div class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class=" mdi mdi-account-edit"></i> 
+                                </div>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                                  <li role="presentation"><a role="menuitem" href="" data-toggle="modal" data-target="#update"> <i class="mdi mdi-account"></i> Edit Profile</a></li>
+                                  <li role="presentation"><a role="menuitem" href="" url="{{ url('Profile@delete') }}" data="userid:{{ $profile->id }}|csrf-token:{{csrf_token()}}" class="send-to-server-click" warning-title="Are you sure?" warning-message="This account will be deleted completly." warning-button="Proceed" class="delete"> <i class="mdi mdi-delete"></i> Delete</a></li>
+                                </ul>
+                        </div>
+                    </div>
+                    <div class="user-profile-pic">
+                            @if(!empty($profile->avatar))
+                            <img src="{{ url('') }}uploads/avatar/{{ $instructor->avatar }}">
+                            @else
+                            <img src="{{ url('') }}assets/images/avatar.png">
+                            @endif
+                    </div>
+                    <div class="user-profile-info">
+                        <h5>{{ $profile->fname }} {{ $profile->lname }}</h5>
+                        <p>{{ $profile->phone }}</p>
+                    </div>
+                    <div class="row user-profile-buttons">
+                        <div class="col-md-6 p-5">
+                            <button class="btn btn-primary btn-icon btn-block"  data-toggle="modal" data-target="#sendsms"><i class=" mdi mdi-message-text-outline"></i> Send SMS</button>
+                        </div>
+                        <div class="col-md-6 p-5">
+                            <button class="btn btn-success btn-icon btn-block"  data-toggle="modal" data-target="#sendemail"><i class=" mdi mdi-email-outline"></i> Send Email</button>
+                        </div>
+                    </div>
+                    <div class="profile-more-section">
+                        <ul class="nav nav-tabs">
+                          <li><a data-toggle="tab" href="#account" class="active">Account Info</a></li>
+                          <li><a data-toggle="tab" href="#activity">Activity</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div id="account" class="tab-pane fade in show active">
+                            <table>
+                                <tr>
+                                    <td class="profile-item-title">Email</td>
+                                    <td class="profile-item-value">{{$profile->email}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">Phone</td>
+                                    <td class="profile-item-value">{{$profile->phone}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">National ID</td>
+                                    <td class="profile-item-value">{{$profile->national_id}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">Date of Birth</td>
+                                    <td class="profile-item-value">
+                                      @if( $profile->date_of_birth != '0000-00-00' ) 
+                                      <span>{{ date('F j, Y', strtotime($profile->date_of_birth)) }}</span>
+                                      @else
+                                      <span class="text-muted">Not set</span>
+                                      @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">Gender</td>
+                                    <td class="profile-item-value">{{$profile->gender}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="profile-item-title">Address</td>
+                                    <td class="profile-item-value">{{$profile->address}}</td>
+                                </tr>
+                            </table>
+                          </div>
+                          <div id="activity" class="tab-pane fade">
+                            <ol class="activity-feed">
+                            @if(!empty($timeline))
+                                @foreach($timeline as $activity)
+                                <li class="feed-item">
+                                    <time class="date" datetime="9-25">{{date('d F, Y',strtotime($activity->created_at))}}</time>
+                                    {{ $activity->activity }}
+                                </li>
+                                @endforeach
+                            @else
+                                <li class="feed-item">
+                                    <span class="text">No activities found.</span>
+                                </li>
+                            @endif
+                            </ol>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="halfpage-content">
+                
+                @if( $profile->role == 'student' )
+                <!-- courses -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            @if( $user->role != 'student' && $user->role != 'instructor'  )
+                            <button class="btn btn-primary btn-icon pull-right"  data-toggle="modal" data-target="#addcourse"><i class=" mdi mdi-plus-circle-outline"></i> Add Course</button>
+                            @endif
+                                <h5>Courses</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Duration</th>
+                                                <th>Classes</th>
+                                                <th>Started</th>
+                                                <th>Progress</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                             @if(!empty($enrollments))
+                                                 @foreach($enrollments as $index => $enrollment)
+                                                <tr>
+                                                    <th scope="row">{{ $index + 1 }}</th>
+                                                    <td>{{ $enrollment->name }}</td>
+                                                    <td>{{ $enrollment->duration }} {{ $enrollment->period }}</td>
+                                                    <td>{{ $enrollment->total_theory + $enrollment->total_practical }}</td>
+                                                    <td>{{ date('F j, Y', strtotime($enrollment->created_at)) }}</td>
+                                                    <td>
+                                                        <span class="badge badge-success">
+                                                            {{ round((($enrollment->completed_theory + $enrollment->completed_practical) / ($enrollment->total_theory + $enrollment->total_practical)) * 100) }}%
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                             @endforeach 
+                                            @else
+                                            <tr><td colspan="6" class="text-center">It's empty here.</td></tr>
+                                            @endif     
+                                            </tbody>
+                                        </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                @endif   
+                @if( $profile->role == 'instructor' || $profile->role == 'student' )
+                <!-- Scheduling -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="pull-right schedule-map">
+                                <span> <i class=" mdi mdi-circle text-danger"></i> Missed </span>
+                                <span> <i class=" mdi mdi-circle text-success"></i> Practical </span>
+                                <span> <i class=" mdi mdi-circle text-primary"></i> Theory </span>
+                                <span> <i class=" mdi mdi-circle text-muted"></i> Complete </span>
+                            </p>
+                                <h5>{{ $profile->fname }}'s Schedule</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id='calendar'>
+                                <div class="loader-demo-box">
+                                    <div class="circle-loader"></div>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                @endif   
+                @if( $user->role != 'student' && $user->role != 'instructor' && $profile->role == 'student'  )
+                <!-- invoices -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                                <h5>Invoices</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Ref</th>
+                                                <th>Amount</th>
+                                                <th>Paid</th>
+                                                <th>Balance</th>
+                                                <th>Date</th>
+                                                <th>View</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if(!empty($invoices))
+                                                 @foreach($invoices as $index => $invoice)
+                                                    <tr>
+                                                        <th scope="row">{{$index + 1}}</th>
+                                                        <td>#{{$invoice->reference}}</td>
+                                                        <td>{{ money($invoice->amount) }}</td>
+                                                        <td>{{ money($invoice->amountpaid) }}</td>
+                                                        <td>{{ money($invoice->amount - $invoice->amountpaid) }}</td>
+                                                        <td>{{date('d F Y',strtotime($invoice->created_at))}}</td>
+                                                        <td><a class="btn btn-primary btn-sm" target="_blank" href="{{ url('Invoice@preview',['invoiceid'=>$invoice->id]) }}">View</a></td>
+                                                    </tr>  
+                                                 @endforeach 
+                                                @else
+                                                <tr><td colspan="7"><p class="text-center text-muted">It's empty here.</p></td></tr>@endif                                      
+                                            </tbody>
+                                        </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payments -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <button class="btn btn-primary btn-icon pull-right"  data-toggle="modal" data-target="#addpayment"><i class=" mdi mdi-plus-circle-outline"></i> Add Payment</button>
+                                <h5>Payments</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Invoice</th>
+                                                <th>Amount</th>
+                                                <th>Date</th>
+                                                <th>Method</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if(!empty($payments))
+                                                 @foreach($payments as $index => $payment)
+                                                    <tr>
+                                                        <th scope="row">{{$index+1}}</th>
+                                                        <td><a href="{{ url('Invoice@preview',['invoiceid'=>$payment->invoice]) }}" target="_blank"><strong>#{{$payment->reference}}</strong></a></td>
+                                                        <td>{{ money($payment->amount) }}</td>
+                                                        <td>{{ date('d F Y',strtotime($payment->created_at)) }}</td>
+                                                        <td>{{ $payment->method }}</td>
+                                                        <td class="text-center">
+                                                            <a href="" class="table-action-icon send-to-server-click" data="paymentid:{{ $payment->id }}|csrf-token:{{ csrf_token() }}" url="{{ url('Invoice@deletepayment') }}" warning-title="Are you sure?" warning-message="This payment record will be deleted." warning-button="Delete" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete" class="delete"><i class="mdi mdi-delete"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                 @endforeach 
+                                                @else
+                                            <tr><td colspan="6" class="text-center">It's empty here.</td></tr>
+                                            @endif   
+                                            </tbody>
+                                        </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                @if( $user->role != 'student' && $user->role != 'instructor'  )
+                <!-- Notes -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <button class="btn btn-primary btn-icon pull-right"  data-toggle="modal" data-target="#addnote"><i class=" mdi mdi-plus-circle-outline"></i> Add Note</button>
+                                <h5>Notes</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Note By</th>
+                                            <th>Note</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                          @if(!empty($notes))
+                                                 @foreach($notes as $index => $note)
+                                            <tr>
+                                                <th scope="row">{{$index + 1}}</th>
+                                                <td>
+                                                    @if( !empty($note->avatar) )
+                                                    <img src="{{ url('') }}uploads/avatar/{{ $note->avatar }}" class="table-avatar communication-avatar">
+                                                    @else
+                                                    <img src="{{ url('') }}assets/images/avatar.png" class="table-avatar communication-avatar">
+                                                    @endif
+                                                    <a href="{{ url('Profile@get',['userid'=>$note->note_by]) }}"><strong>{{ $note->fname }} {{ $note->lname }}</strong></a>
+                                                    <span class="communication-contact">{{date('d F Y', strtotime($note->created_at))}}</span>
+                                                </td>
+                                                <td>
+                                                    @if ( strlen($note->note) > 50 )
+                                                    {{ substr($note->note,0,50).'...'; }}
+                                                    @else
+                                                    {{ $note->note; }}
+                                                    @endif
+                                                </td>
+                                                <td class="text-center">
+                                                    <a href="" class="table-action-icon fetch-display-click" data="noteid:{{ $note->id }}|csrf-token:{{ csrf_token() }}" url="<?=url('Profile@readnote');?>" holder=".shared-holder" modal="#shared" loader="true" data-toggle="tooltip" data-placement="top" title="Read Note" data-original-title="Read Note"><i class="mdi mdi-eye"></i></a>
+                                                        <a href="" class="table-action-icon fetch-display-click" data="noteid:{{ $note->id }}|csrf-token:{{ csrf_token() }}" url="<?=url('Profile@updatenoteview');?>" holder=".shared-holder" modal="#shared" loader="true" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit"><i class="mdi mdi-pencil"></i></a>
+                                                        <a href="" class="table-action-icon  send-to-server-click" data="noteid:{{ $note->id }}|csrf-token:{{ csrf_token() }}" url="{{ url('Profile@deletenote') }}" loader="true" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete"><i class="mdi mdi-delete"></i></a>
+                                                </td>
+                                            </tr>
+                                            @endforeach 
+                                            @else
+                                            <tr><td colspan="4" class="text-center">It's empty here.</td></tr>
+                                           @endif  
+                                        </tbody>
+                                    </table>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Attachments -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <button class="btn btn-primary btn-icon pull-right"  data-toggle="modal" data-target="#addattachment"><i class="mdi mdi-cloud-upload"></i> Upload Attachment</button>
+                                <h5>Attachments</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Uploaded By</th>
+                                                <th>Date</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @if(!empty($attachments))
+                                                @foreach($attachments as $key => $attachment)
+                                                <tr>
+                                                    <th scope="row">{{$key+1}}</th>
+                                                    <td>{{ $attachment->name }}</td>
+                                                    <td><a href=""><strong>{{ $attachment->fname }} {{ $attachment->lname }}</strong></a></td>
+                                                    <td>{{ date('F j, Y',strtotime($attachment->created_at))}}</td>
+                                                    <td class="text-center">
+                                                        <a href="{{ url('') }}uploads/attachments/{{ $attachment->attachment }}" target="_blank" class="table-action-icon" data-toggle="tooltip" data-placement="top" title="View Attachment" data-original-title="View Attachment"><i class="mdi mdi-eye"></i></a>
+                                                        <a href="{{ url('') }}uploads/attachments/{{ $attachment->attachment }}" download="{{ $attachment->name }}" class="table-action-icon" data-toggle="tooltip" data-placement="top" title="Download" data-original-title="Download"><i class="mdi mdi-cloud-download"></i></a>
+                                                        <a href="" data="attachmentid:{{ $attachment->id }}|csrf-token:{{ csrf_token() }}" url="{{url('Profile@deleteattachment')}}" class="table-action-icon send-to-server-click" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete"><i class="mdi mdi-delete"></i></a>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            @else 
+                                            <tr><td colspan="6" class="text-center">It's empty here.</td></tr>
+                                            @endif
+                                            </tbody>
+                                        </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
+
+        </div>
+    </div>
+
+    <!-- footer -->
+    @include("includes/footer")
+
+    <!-- edit user profile -->
+    <div class="modal right fade" id="update" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Edit Profile</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="simcy-form" action="{{ url('Profile@update') }}" method="POST" loader="true">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>First Name</label>
+                                        <input type="text" class="form-control" placeholder="First Name" value="{{ $profile->fname }}" name="fname"required>
+                                        <input type="hidden" value="{{ csrf_token() }}" name="csrf-token">
+                                        <input type="hidden" value="{{ $profile->id }}" name="userid">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Last Name</label>
+                                        <input type="text" class="form-control" placeholder="Last Name" value="{{ $profile->lname }}" name="lname" required>
+                                    </div>
+                                </div> 
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="email">Gender</label>
+                                        <select class="form-control" name="gender" required>
+                                            <option value="Male" @if( !empty( $profile->gender == "Male" ) ) selected @endif >Male</option>
+                                            <option value="Female" @if( !empty( $profile->gender == "Female" ) ) selected @endif >Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Date of Birth</label>
+                                      @if( $profile->date_of_birth == '0000-00-00' )
+                                      <input type="text" class="form-control datepicker" name="date_of_birth" placeholder="Date of Birth">
+                                      @else
+                                      <input type="text" class="form-control datepicker" name="date_of_birth" value="{{ date('m/d/Y', strtotime($profile->date_of_birth)) }}" placeholder="Date of Birth">
+                                      @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Email Address</label>
+                                        <input type="text" class="form-control" placeholder="Email Address" name="email" value="{{ $profile->email }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Phone Number</label>
+                                        <input type="text" class="form-control" placeholder="Phone Number" name="phone" value="{{ $profile->phone }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Address</label>
+                                        <input type="text" class="form-control" placeholder="Address" name="address" value="{{ $profile->address }}">
+                                    </div>
+                                </div>
+                            </div>
+                            @if ( $user->role == "admin" && $profile->role == "staff" || $user->role == "superadmin" && $profile->role == "staff" || $user->role == "admin" && $profile->role == "instructor" || $user->role == "superadmin" && $profile->role == "instructor" )
+                              <div class="form-group">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <label for="email">Permission</label>
+                                    <select class="form-control" name="permissions" required>
+                                        <option value="read_write_delete" @if( !empty( $profile->permissions == "read_write_delete" ) ) selected @endif>Read, Write & Delete</option>
+                                        <option value="read_write" @if( !empty( $profile->permissions == "read_write" ) ) selected @endif>Read & Write</option>
+                                        <option value="read_only" @if( !empty( $profile->permissions == "read_only" ) ) selected @endif>Read Only</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <label for="email">Branch</label>
+                                    <select class="form-control" name="branch" required>
+                                        <option value="">Select Branch *</option>
+                                        @foreach($branches as $branch)
+                                        <option value="{{$branch->id}}" @if( !empty( $profile->branch == $branch->id ) ) selected @endif>{{$branch->name}}</option>
+                                        @endforeach
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                              @endif
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary btn-block">Save Changes</button>
+                                    </div>
+                                </div>
+                            </div>    
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end edit user profile -->
+
+
+
+    <!-- Shared Modal -->
+    <div class="modal right fade" id="shared" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title"> {{ $profile->fname }} {{ $profile->lname }} </h4>
+                </div>
+                <div class="shared-holder"><div class="loader-box"><div class="circle-loader"></div></div></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- end Add course to user -->
+    @if( $user->role != 'student' && $user->role != 'instructor' && $profile->role == 'student'  )
+    <!-- Add course to user -->
+    <div class="modal right fade" id="addcourse" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Add Course</h4>
+                    </div>
+
+                    <div class="modal-body">
+                      <form class="simcy-form" data-parsley-validate="" method="POST" action="{{ url('Student@addcourse') }}" loader="true">
+                              <div class="form-group">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <label>Course</label>
+                                    <select class="form-control select2" name="newcourse" required="">
+                                        <option value="">Select Course</option>
+                                        @foreach($courses as $course)
+                                         <option value="{{$course->id}}">{{$course->name}} ( ${{$course->price }} )</option>
+                                        @endforeach
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group newamount" style="display: none;">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <label>Amount Paid ({{ currency() }})</label>
+                                    <input type="number" class="form-control" placeholder="Amount Paid" value="0" name="amountpaid">
+                                    <input type="hidden" value="{{csrf_token()}}" name="csrf-token">
+                                    <input type="hidden" value="{{ $profile->id }}" name="studentid">
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group newmethod" style="display: none;">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <label for="email">Method of payment</label>
+                                    <select class="form-control method" name="method">
+                                        <option value="Cash">Cash</option>
+                                        <option value="Mpesa">Mpesa</option>
+                                        <option value="Paypal">Paypal</option>
+                                        <option value="Card">Card</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                </div>
+                              <div class="form-group">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <button class="btn btn-primary btn-block" type="submit">Add Course</button>
+                                  </div>
+                                </div>
+                              </div>
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end Add course to user -->
+    <!-- Add Payment -->
+    <div class="modal right fade" id="addpayment" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Add Payment</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="simcy-form" data-parsley-validate="" method="POST" action="{{ url('Invoice@addpayment') }}" loader="true">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                <label>Select Invoice</label>
+                                <input type="hidden" value="{{csrf_token()}}" name="csrf-token">
+                                <select class="form-control select2" name="invoice" required>
+                                    <option value="">Select Invoice</option>
+                                    @foreach($invoices as $invoice)
+                                     <option value="{{$invoice->id}}">#{{ $invoice->reference }} (${{ $invoice->amount }})</option>
+                                    @endforeach
+                                </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Amount ( {{ currency() }} )</label>
+                                        <input type="number" class="form-control" placeholder="Amount" name="amount" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Date</label>
+                                        <input type="text" class="form-control datepicker" placeholder="Date" name="payday" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="email">Method of payment</label>
+                                        <select class="form-control" name="method" required>
+                                            <option value="">Select Payment Method</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Mpesa">Mpesa</option>
+                                            <option value="Paypal">Paypal</option>
+                                            <option value="Card">Card</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary btn-block" type="submit">Add Payment</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end Add payment -->
+    @endif
+    @if( $user->role != 'student' && $user->role != 'instructor'  )
+    <!-- upload attachment -->
+    <div class="modal right fade" id="addattachment" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Add Attachment</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="simcy-form" data-parsley-validate="" method="POST" action="{{ url('Profile@uploadattachment') }}" loader="true">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Attachment Name</label>
+                                    <input type="text" class="form-control" name="name" placeholder="Attachment Name" required>
+                                    <input type="hidden" value="{{ csrf_token() }}" name="csrf-token">
+                                    <input type="hidden" value="{{ $profile->id }}" name="userid">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Choose Attachment</label>
+                                    <input type="file" class="dropify" name="attachment" placeholder="Choose Attachment"  data-allowed-file-extensions="pdf png jpg gif jpeg" required="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-block">Upload Attachment</button>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end upload attachment -->
+    <!-- Send Email-->
+    <div class="modal right fade" id="sendemail" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Send Email</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="simcy-form" action="{{url('Profile@sendemail')}}" data-parsley-validate="" method="POST" loader="true">
+                            <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Subject</label>
+                                            <input type="text" class="form-control" name="subject" placeholder="Subject" required>
+                                            <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="userid" value="{{ $profile->id }}">
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Message</label>
+                                            <textarea class="form-control" name="message" placeholder="Message" rows="6" required></textarea>
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-primary btn-block">Send Email</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end Send Email-->
+    <!-- Send SMS-->
+    <div class="modal right fade" id="sendsms" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Send SMS</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="simcy-form" action="{{url('Profile@sendsms')}}" data-parsley-validate="" method="POST" loader="true">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Message</label>
+                                        <textarea class="form-control" name="message" placeholder="Message" rows="6" required></textarea>
+                                        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="userid" value="{{ $profile->id }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-primary btn-block">Send SMS</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end SMS-->
+    <!-- Send SMS-->
+    <div class="modal right fade" id="addnote" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Add Note</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="simcy-form" data-parsley-validate="" loader="true" method="POST" action="{{ url('Profile@addnote') }}">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Write Note</label>
+                                        <textarea class="form-control" placeholder="Write Note" rows="6" name="note" required=""></textarea>
+                                        <input type="hidden" value="{{ csrf_token() }}" name="csrf-token">
+                                        <input type="hidden" value="{{ $profile->id }}" name="userid">
+                                    </div>
+                                </div>
+                            </div>                        
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary btn-block">Post Note</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end SMS-->
+    @endif
+
+    @if( $profile->role == 'instructor' || $profile->role == 'student' )
+
+        <!-- Add class -->
+        <div class="modal right fade" id="scheduleclass" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                            <h4 class="modal-title" id="myModalLabel2">Schedule Class</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="simcy-form" action="{{ url('Schedule@create') }}" method="POST" loader="true">
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class Starts</label>
+                                        <input type="text" class="form-control" placeholder="Class Starts" name="start" data-date-format="dd MM yyyy - HH:ii p">
+                                        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class Ends</label>
+                                        <input type="text" class="form-control" placeholder="Class Ends" name="end" data-date-format="dd MM yyyy - HH:ii p">                                    
+                                    </div>
+                                </div>
+                              </div>
+                              @if( $profile->role == 'student'  )
+                              <input type="hidden" name="student" value="{{ $profile->id }}">
+                              @else
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Student</label>
+                                        <select class="form-control select2" name="student" required="">
+                                            @if(!empty($students))
+                                            @foreach($students as $student)
+                                            <option value="{{$student->id}}">{{$student->fname}} {{$student->lname}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              @endif
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Course</label>
+                                        <select class="form-control select2" name="course" required="">
+                                        <option value="0">Select Courses</option>
+                                            @if(!empty($enrollments))
+                                            @foreach($enrollments as $enrollment)
+                                            <option value="{{$enrollment->course}}">{{$enrollment->name}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              @if( $profile->role == 'instructor'  )
+                              <input type="hidden" name="instructor" value="{{ $profile->id }}">
+                              @else
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Instructor</label>
+                                        <select class="form-control select2" name="instructor" required="">
+                                            <option value="0">Select Instructor*</option>                                    
+                                            @if(!empty($instructors))
+                                            @foreach($instructors as $instructor)
+                                            <option value="{{$instructor->id}}" id="{{$instructor->course}}">{{$instructor->fname}} {{$instructor->lname}}</option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              @endif
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Class</label>
+                                        <select class="form-control select2" name="class_type" required="">
+                                            <option value="Theory">Theory Class</option>
+                                            <option value="Practical">Practical Practical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Car</label>
+                                        <select class="form-control select2" name="car">
+                                            <option value="0">Select Car</option>
+                                            @if(!empty($fleets))
+                                            @foreach($fleets as $fleet)
+                                            <option value="{{$fleet->id}}">{{$fleet->make}} {{$fleet->model}} ( {{$fleet->carplate}} ) </option>
+                                            @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Status</label>
+                                        <select class="form-control select2" name="status" required="">
+                                            <option value="New">New Booking</option>
+                                            <option value="Complete">Complete</option>
+                                            <option value="Missed">Missed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary btn-block" type="submit">Save Class</button>
+                                    </div>
+                                </div>
+                              </div>
+                            </form>
+                        </div>
+
+                    </div><!-- modal-content -->
+                </div><!-- modal-dialog -->
+            </div>
+        <!-- end Add class -->
+
+        <!-- scheduleupdate -->
+        <div class="modal right fade" id="scheduleupdate" role="dialog" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Scheduling</h4>
+                    </div>
+                    <div class="scheduleupdate-holder"></div>
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+        <!-- end scheduleupdate -->
+
+    @endif
+
+
+
+   <script src="{{ url('') }}assets/js/jquery-3.3.1.min.js"></script>
+   <script src="{{ url('') }}assets/js/popper.min.js"></script>
+   <script src="{{ url('') }}assets/libs/bootstrap/js/bootstrap.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+   <script src="{{ url('') }}assets/libs/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+   <script src="{{ url('') }}assets/libs/fullcalendar/moment.min.js"></script>
+   <script src="{{ url('') }}assets/libs/fullcalendar/fullcalendar.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-ui/jquery-ui.min.js"></script>
+   <script src="{{ url('') }}assets/js/simcify.min.js"></script>
+   @if( $profile->role == 'instructor' || $profile->role == 'student' )
+   <script src="{{ url('') }}assets/js/schedule.js"></script>
+   @endif
+   <script src="{{ url('') }}assets/js/app.js"></script>
+   <script type="text/javascript">
+       // Jquery start
+    $(document).ready(function() {
+        // sidebar - scroll container
+        $('.slimscroll-profile-menu').slimscroll({
+            height: 'auto',
+            position: 'right',
+            size: "3px",
+            color: '#9ea5ab',
+            wheelStep: 5,
+            touchScrollStep: 50
+        });
+    });
+
+    var filter = '{{ $profile->role }}';
+    var filterid = '{{ $profile->id }}';
+    var schedulesUrl = '{{ url("Schedule@fetch") }}';
+    var schedulesUpdateView = '{{ url("Schedule@updateview") }}';
+</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('') }}uploads/app/{{ env('APP_ICON'); }}">
+    <title>Schools | Driving School Management System</title>
+
+    <!-- Material design icons -->
+    <link href="{{ url('') }}assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url('') }}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="{{ url('') }}assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="{{ url('') }}assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- sidebar -->
+    @include("includes/sidebar")
+
+    <!-- header -->
+    @include("includes/header")
+    <!-- main content -->
+    <div class="main-content">
+        <div class="page-header">
+            <button type="button" class="btn btn-primary btn-icon pull-right ml-5" data-toggle="modal" data-target="#create"><i class=" mdi mdi-plus-circle-outline"></i> Add School </button>
+            <h3>Schools</h3>
+            <p>These are independent schools that signed up. </p>
+        </div>
+        <!-- page content -->
+        <div class="row">
+
+            @if(!empty($schools))
+            @foreach($schools as $school)
+            <!-- school -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="school">
+                        <div class="school-heading">
+                            <div class="school-icon">{{ mb_substr($school->name, 0, 1, 'utf-8') }}</div>
+                            <div class="school-details">
+                                <h5>{{$school->name}}</h5>
+                                <span>{{$school->email}}</span>
+                                <span>
+                               @if ( !empty($school->phone) ) {{ $school->phone }} @else Phone not set @endif
+                               </span>
+                            </div>
+                        </div>
+                        <div class="school-info">
+                            <p>
+                                <span><i class="mdi mdi-account-convert"></i></span>
+                                {{ $school->students }} Active Students
+                            </p>
+                            <p>
+                                <span><i class="mdi mdi-account-multiple-outline"></i></span>
+                                {{ $school->instructors }} Instructors
+                            </p>
+                            <p>
+                                <span><i class="mdi mdi-map-marker-multiple"></i></span>
+                                {{ $school->branches }} Branches
+                            </p>
+                            <p>
+                                <span><i class="mdi mdi-map"></i></span>
+                               @if ( !empty($school->address) ) {{ $school->address }} @else Address not set @endif
+                            </p>
+                        </div>
+                        <div class="school-footer">
+                            <div class="dropdown pull-right">
+                                    <span class="dropdown-toggle" data-toggle="dropdown">
+                                        <i class="mdi mdi-dots-horizontal"></i> </span>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                                      <li role="presentation"><a role="menuitem" class="fetch-display-click" data="schoolid:{{ $school->id }}|csrf-token:{{ csrf_token() }}" url="<?=url('School@updateview');?>" holder=".update-holder" modal="#update" loader="true" href=""> <i class="mdi mdi-pencil"></i> Edit</a></li>
+                                      <li role="presentation"><a role="menuitem" href="" input="schoolid" modal="#sendemail" class="pass-data" value="{{ $school->id }}"> <i class="mdi mdi-email-outline"></i> Send Email</a></li>
+                                      <li role="presentation"><a role="menuitem" href="" input="schoolid" modal="#sendsms" class="pass-data" value="{{ $school->id }}"> <i class="mdi mdi-message-text-outline"></i> Send SMS</a></li>
+                                      <li role="presentation"><a role="menuitem" href="" class="send-to-server-click" data="schoolid:{{ $school->id }}|csrf-token:{{ csrf_token() }}" url="{{ url('School@delete') }}" warning-title="Are you sure?" warning-message="This school and all it's data will be deleted." warning-button="Continue" loader="true"> <i class="mdi mdi-delete"></i> Delete</a></li>
+                                    </ul>
+                            </div>
+                            @if(($school->status) == 'Active')
+                            <span class="badge badge-success">Active School</span>
+                            @else
+                            <span class="badge badge-danger">Suspended School</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        @else
+            <div class="col-md-12">
+                <div class="empty">
+                    <i class="mdi mdi-alert-circle-outline"></i>
+                    <h3>It's empty here!</h3>
+                </div>
+            </div>
+        @endif
+        </div>
+
+    </div>
+
+        <!-- footer -->
+        @include("includes/footer")
+
+    <!-- add school -->
+    <div class="modal right fade" id="create" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Add School</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url('School@create') }}" class="simcy-form" data-parsley-validate=""  loader="true" method="post">
+                        <p>A welcome email will be set and recepient will complete setup of their school account.</p>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12"></div>
+                            </div><label>School Name</label> 
+                            <input class="form-control" name="schoolname" placeholder="School Name" required="" type="text"> <input name="csrf-token" type="hidden" value="{{ csrf_token() }}">
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Email Address</label> 
+                                    <input class="form-control" data-parsley-trigger="change" name="email" placeholder="Email Address" required="" type="email">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Phone Number</label> <input class="form-control" name="phone" placeholder="Phone Number" required="" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Address</label> <input class="form-control" name="address" placeholder="Address" required="" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Founder First Name</label> <input class="form-control" name="fname" placeholder="Founder First Name" required="" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Founder Last Name</label> <input class="form-control" name="lname" placeholder="Founder Last Name" required="" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-block">Add School</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div>
+    <!-- end add school -->
+    <!-- update -->
+    <div class="modal right fade" id="update" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Edit School</h4>
+                </div>
+                <div class="update-holder"></div>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div>
+    <!-- end update -->
+    <!-- Send Email-->
+    <div class="modal right fade" id="sendemail" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Send Email</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url('School@sendemail') }}" class="simcy-form" data-parsley-validate=""  loader="true" method="post">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Subject</label> 
+                                    <input class="form-control" name="subject" placeholder="Subject" type="text" required="">
+                                    <input name="csrf-token" type="hidden" value="{{csrf_token()}}">
+                                    <input name="schoolid" type="hidden">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Message</label> 
+                                    <textarea class="form-control" name="message" placeholder="Message" rows="6" required=""></textarea>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary btn-block">Send Email</button>
+                                </div>
+                            </div>
+                        </div> 
+                    </form>
+                </div>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div>
+    <!-- end Send Email-->
+    <!-- Send SMS-->
+    <div class="modal right fade" id="sendsms" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Send SMS</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url('School@sendsms') }}" class="simcy-form" data-parsley-validate=""  loader="true" method="post">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Message</label> 
+                                    <textarea class="form-control" placeholder="Message" name="message" rows="6" required=""></textarea>
+                                    <input name="csrf-token" type="hidden" value="{{ csrf_token() }}">
+                                    <input name="schoolid" type="hidden">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary btn-block">Send SMS</button>
+                                </div>
+                            </div>
+                        </div> 
+                    </form>
+                </div>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- end SMS-->
+
+
+   <script src="{{ url('') }}assets/js/jquery-3.3.1.min.js"></script>
+   <script src="{{ url('') }}assets/js/popper.min.js"></script>
+   <script src="{{ url('') }}assets/libs/bootstrap/js/bootstrap.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+   <script src="{{ url('') }}assets/js/simcify.min.js"></script>
+   <script src="{{ url('') }}assets/js/app.js"></script>
+</body>
+</html>

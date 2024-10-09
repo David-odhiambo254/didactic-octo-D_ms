@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('') }}uploads/app/{{ env('APP_ICON'); }}">
+    <title>Students | Landa Driving School Management System</title>
+
+    <!-- Material design icons -->
+    <link href="{{ url('') }}assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url('') }}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="{{ url('') }}assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="{{ url('') }}assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- sidebar -->
+    @include("includes/sidebar")
+
+    <!-- header -->
+    @include("includes/header")
+
+    <!-- main content -->
+    <div class="main-content">
+        <div class="page-header">
+            <button type="button" class="btn btn-primary btn-icon pull-right ml-5" data-toggle="modal" data-target="#create"><i class=" mdi mdi-account-plus-outline"></i> Add Student </button>
+            <button type="button" class="btn btn-success btn-icon pull-right toggle-search"><i class=" mdi mdi-filter-outline"></i> Filter & Search </button>
+            <h3>Students</h3>
+        </div>
+
+
+        <!-- page content -->
+        <div class="row">
+
+            <!-- search & Filter -->
+            <div class="col-md-12 search-filter" style="display: none;">
+                <div class="card">
+                    <form class="row" action="" method="GET">
+                        <div class="col-md-4">
+                              <div class="form-group">
+                                <label>Search Name, Email or Phone</label>
+                                <input type="text" class="form-control" placeholder="Search Name, Email or Phone" name="search">
+                              </div>
+                        </div>
+                        <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="email">Progress</label>
+                                <select class="form-control" name="status">
+                                    <option value="0">Select Progress*</option>
+                                    <option value="All">All</option>
+                                    <option value="Complete">Complete</option>
+                                    <option value="Ongoing">Ongoing</option>
+                                    <option value="New">New</option>
+                                </select>
+                              </div>
+                        </div>
+                        <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="email">Fees</label>
+                                <select class="form-control" name="istatus"> 
+                                    <option value="0">Select Fee Category*</option>
+                                    <option value="All">All</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Partially">Partially</option>
+                                    <option value="Updaid">Unpaid</option>
+                                </select>
+                              </div>
+                        </div>
+                        <div class="col-md-2">
+                              <div class="form-group">
+                                <label for="email">Gender</label>
+                                <select class="form-control" name="gender">
+                                    <option value="">Select Gender*</option>
+                                    <option value="">All</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                              </div>
+                        </div>
+                        <div class="col-md-2">
+                              <button class="btn btn-primary btn-icon btn-block" type="submit"><i class=" mdi mdi-filter-outline"></i> Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @if(!empty($students))
+               @foreach($students as $student)
+                <!-- user grid -->
+                <div class="col-md-3">
+                    <div class="user-grid card">
+                        <div class="user-grid-pic">
+                            @if( !empty($student->avatar) )
+                            <img src="{{ url('') }}uploads/avatar/{{ $student->avatar }}">
+                            @else
+                            <img src="{{ url('') }}assets/images/avatar.png">
+                            @endif
+                        </div>
+                        <div class="user-grid-info">
+                            <h5>{{ $student->fname }} {{ $student->lname }}</h5>
+                            <p>{{ $student->courses }} course(s) Enrolled </p>
+                            <p>{{ $student->phone }}</p>
+                        </div>
+                        <div class="row user-grid-buttons">
+                            <div class="col-md-6 p-5">
+                                <a class="btn btn-primary btn-block" href="{{ url('Profile@get',['userid'=>$student->id]) }}">Profile</a>
+                            </div>
+                            <div class="col-md-6 p-5">
+                                <a class="btn btn-default btn-block" href="{{url('Schedule@get')}}?filter=student&filterid={{ $student->id }}">Schedule</a>
+                            </div>
+                        </div>
+                        <div class="user-grid-class-left">
+                            <p class="text-success"><i class=" mdi mdi-counter"></i> {{$student->completed}} Class(es) Completed</p>
+                        </div>
+                    </div>
+                </div>
+               @endforeach
+            @else 
+            <div class="col-md-12">
+                <div class="empty">
+                    <i class="mdi mdi-alert-circle-outline"></i>
+                    <h3>It's empty here!</h3>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- footer -->
+    @include("includes/footer")
+
+<!-- modals -->
+<div class="modal right fade" id="create" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Add Student</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form class="simcy-form" data-parsley-validate="" action="{{ url('Student@create') }}" method="POST" loader="true">
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>First Name</label>
+                            <input type="text" class="form-control" placeholder="First Name" name="fname" required="">
+                            <input type="hidden" value="{{csrf_token()}}" name="csrf-token">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Last Name</label>
+                            <input type="text" class="form-control" placeholder="Last Name" name="lname" required="">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Email Address</label>
+                            <input type="text" class="form-control" placeholder="Email Address" name="email" required="">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Phone Number</label>
+                            <input type="text" class="form-control" placeholder="Phone Number" name="phone" required="">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label for="email">Gender</label>
+                            <select class="form-control"name="gender" required="">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>National ID</label>
+                            <input type="text" class="form-control" placeholder="National ID" name="NID" required="">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Course</label>
+                            <select class="form-control select2" name="newcourse" required="">
+                                <option value="">Select Course</option>
+                                @foreach($courses as $course)
+                                 <option value="{{$course->id}}">{{$course->name}} ( ${{$course->price }} )</option>
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group newamount" style="display: none;">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Amount Paid</label>
+                            <input type="number" class="form-control" placeholder="Amount Paid" value="0" name="amountpaid">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group newmethod" style="display: none;">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label for="email">Method of payment</label>
+                            <select class="form-control method" name="method">
+                                <option value="Cash">Cash</option>
+                                <option value="Mpesa">Mpesa</option>
+                                <option value="Paypal">Paypal</option>
+                                <option value="Card">Card</option>
+                                <option value="Other">Other</option>
+                            </select>
+                          </div>
+                        </div>
+                        </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <button class="btn btn-primary btn-block" type="submit">Create Account</button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                </div>
+
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
+
+   <script src="{{ url('') }}assets/js/jquery-3.3.1.min.js"></script>
+   <script src="{{ url('') }}assets/js/popper.min.js"></script>
+   <script src="{{ url('') }}assets/libs/bootstrap/js/bootstrap.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+   <script src="{{ url('') }}assets/js/simcify.min.js"></script>
+   <script src="{{ url('') }}assets/js/app.js"></script>
+   <script>
+     //Hide Payment Method
+     $('.paymentmethod').hide();
+     //Conditionally show payment method
+     $('.amountpaid').on('keyup',function(){
+        if($(this).val() > 0){
+            $('.paymentmethod').show();
+            $('.method').attr('required',true);
+        } else {
+            $('.paymentmethod').hide();
+            $('.method').attr('required',false); 
+        }
+     });
+   </script>
+</body>
+</html>

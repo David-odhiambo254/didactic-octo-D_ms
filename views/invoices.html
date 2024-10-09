@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('') }}uploads/app/{{ env('APP_ICON'); }}">
+    <title>Invoices | Landa Driving School Management System</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" />
+    <!-- Material design icons -->
+    <link href="{{ url('') }}assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url('') }}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="{{ url('') }}assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="{{ url('') }}assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- sidebar -->
+    @include("includes/sidebar")
+
+    <!-- header -->
+    @include("includes/header")
+    
+    <!-- main content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h3>Invoices</h3>
+        </div>
+
+
+        <!-- page content -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+
+                        <div class="card-body p-0">
+                            <div class="table-responsive longer">
+                                <table class="table table-striped mb-0 mw-1000" id="data-table">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Student</th>
+                                                <th>Ref</th>
+                                                <th>Amount</th>
+                                                <th>Paid</th>
+                                                <th>Balance</th>
+                                                <th>Date</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @if(!empty($invoices))
+                                                @foreach($invoices as $key => $invoice)
+                                                <tr>
+                                                    <th scope="row">{{$key+1}}</th>
+                                                    <td class="p-8">
+                                                        @if( !empty($invoice->avatar) )
+                                                        <img src="{{ url('') }}uploads/avatar/{{ $invoice->avatar }}" class="table-avatar communication-avatar">
+                                                        @else
+                                                        <img src="{{ url('') }}assets/images/avatar.png" class="table-avatar communication-avatar">
+                                                        @endif
+                                                        <a href="{{ url('Profile@get',['userid'=>$invoice->student]) }}"><strong>{{ $invoice->fname }} {{ $invoice->lname }}</strong></a>
+                                                        <span class="communication-contact">{{ $invoice->email }}</span>
+                                                    </td>
+                                                    <td>#{{ $invoice->reference }}</td>
+                                                    <td>{{ money($invoice->amount) }}</td>
+                                                    <td>{{ money($invoice->amountpaid) }}</td>
+                                                    <td>{{ money($invoice->amount - $invoice->amountpaid) }}</td>
+                                                    <td>{{ date('d F Y',strtotime($invoice->created_at)) }}</td>
+                                                    <td class="text-center">
+                                                        <a class="btn btn-primary btn-sm btn-icon" target="_blank" href="{{ url('Invoice@preview',['invoiceid'=>$invoice->id]) }}"><i class="mdi mdi-eye"></i> Preview</a>
+                                                        <div class="dropdown inline-block">
+                                                                <button class="btn btn-default btn-sm btn-icofn dropdown-toggle" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></button>
+                                                                <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                                                                    <li role="presentation"><a role="menuitem" href=""  input="invoice" modal="#addpayment" class="pass-data" value="{{ $invoice->id }}" > <i class="mdi mdi-credit-card-plus"></i> Add Payment</a></li>
+                                                                    <li role="presentation"><a role="menuitem" href="" class="fetch-display-click" data="invoiceid:{{ $invoice->id }}|csrf-token:{{ csrf_token() }}" url="<?=url('Invoice@viewpayments');?>" holder=".update-holder" modal="#update"> <i class="mdi mdi-credit-card"></i> Payments</a></li>
+                                                                    <li role="presentation"><a role="menuitem" href="{{ url('Invoice@download',['invoiceid'=>$invoice->id]) }}"> <i class="mdi mdi-cloud-download"></i> Download</a></li>
+                                                                    <li role="presentation"><a role="menuitem" href="" class="fetch-display-click" data="invoiceid:{{ $invoice->id }}|csrf-token:{{ csrf_token() }}" url="<?=url('Invoice@updateview');?>" holder=".update-holder" modal="#update"> <i class="mdi mdi-pencil"></i> Edit</a></li>
+                                                                    <li role="presentation"><a role="menuitem" href="" data="invoiceid:{{ $invoice->id }}|csrf-token:{{csrf_token()}}" url="{{url('Invoice@delete')}}" warning-title="Are you sure?" warning-message="This invoice and it's payments will be deleted." warning-button="Delete" class="send-to-server-click"> <i class="mdi mdi-delete"></i> Delete</a></li>
+                                                                </ul>
+                                                        </div>
+                                                        
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            @else
+                                            <tr><th class="text-center" colspan="8">It's empty here!</th></tr>
+                                            @endif
+                                            </tbody>
+                                        </table>
+                        </div>
+                        </div>
+                </div>
+            </div>
+
+        
+        </div>
+    </div>
+
+    <!-- footer -->
+    @include("includes/footer")
+
+    <!-- Add Payment -->
+    <div class="modal right fade" id="addpayment" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Add Payment</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="simcy-form" data-parsley-validate="" method="POST" action="{{ url('Invoice@addpayment') }}" loader="true">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Amount ({{ currency() }})</label>
+                                        <input type="number" class="form-control" placeholder="Amount" name="amount" required>
+                                        <input type="hidden" value="{{csrf_token()}}" name="csrf-token">
+                                        <input type="hidden" name="invoice">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Date</label>
+                                        <input type="text" class="form-control datepicker" placeholder="Date" name="payday" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="email">Method of payment</label>
+                                        <select class="form-control" name="method" required>
+                                            <option value="">Select Payment Method</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Mpesa">Mpesa</option>
+                                            <option value="Paypal">Paypal</option>
+                                            <option value="Card">Card</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button class="btn btn-primary btn-block" type="submit">Add Payment</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end Add payment -->
+
+    <!-- update -->
+    <div class="modal right fade" id="update" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Invoice Info</h4>
+                </div>
+                <div class="update-holder"></div>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div>
+    <!-- end update -->
+
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.flash.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#data-table').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5'
+                ]
+            });
+        });
+    </script>
+   <script src="{{ url('') }}assets/js/popper.min.js"></script>
+   <script src="{{ url('') }}assets/libs/bootstrap/js/bootstrap.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+   <script src="{{ url('') }}assets/js/simcify.min.js"></script>
+   <script src="{{ url('') }}assets/js/app.js"></script>
+
+</body>
+</html>

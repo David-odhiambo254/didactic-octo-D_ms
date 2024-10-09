@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Driving School Management System">
+    <meta name="author" content="Simcy Creative">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url('') }}uploads/app/{{ env('APP_ICON'); }}">
+    <title>Communication Center | Landa Driving School Management System</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" />
+    <!-- Material design icons -->
+    <link href="{{ url('') }}assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="{{ url('') }}assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Simcify CSS -->
+    <link href="{{ url('') }}assets/css/simcify.min.css" rel="stylesheet">
+
+    <!-- Landa CSS -->
+    <link href="{{ url('') }}assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- sidebar -->
+    @include("includes/sidebar")
+
+    <!-- header -->
+    @include("includes/header")
+
+
+    <!-- main content -->
+    <div class="main-content">
+        <div class="page-header">
+            <button type="button" class="btn btn-success btn-icon pull-right ml-5"  data-toggle="modal" data-target="#sendemail"><i class=" mdi mdi-email-outline"></i> Send Email </button>
+            <button type="button" class="btn btn-primary btn-icon pull-right"  data-toggle="modal" data-target="#sendsms"><i class=" mdi mdi-message-text-outline"></i> Send SMS </button>
+            <h3>Communication</h3>
+        </div>
+
+
+        <!-- page content -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                        <div class="card-body p-0">
+
+                        <ul class="nav nav-tabs">
+                          <li><a href="{{ url('Communication@get') }}" @if (!isset($_GET['view']))  class="active" @endif>To Users</a></li>
+                          <li><a href="{{ url('Communication@get') }}?view=branches"@if (isset($_GET['view']) && $_GET['view'] == "branches")  class="active" @endif>To Branches</a></li>
+                          @if($user->role == 'superadmin')
+                          <li><a href="{{ url('Communication@get') }}?view=schools"@if (isset($_GET['view']) && $_GET['view'] == "schools")  class="active" @endif>To Schools</a></li>
+                          @endif
+                        </ul>
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0 mw-1000" id="data-table">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Receiver</th>
+                                                <th>Status + Date</th>
+                                                <th>Message</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @if(!empty($messages))
+                                                @foreach($messages as $key => $message)
+                                                    <tr>
+                                                        <th scope="row">{{ $key + 1 }}</th>
+                                                        <td>
+                                                            @if (!isset($_GET['view'])) 
+                                                            @if( !empty($message->avatar) )
+                                                            <img src="{{ url('') }}uploads/avatar/{{ $message->avatar }}" class="table-avatar communication-avatar">
+                                                            @else
+                                                            <img src="{{ url('') }}assets/images/avatar.png" class="table-avatar communication-avatar">
+                                                            @endif
+                                                            <a href="{{ url('Profile@get',['userid'=>$message->receiver]) }}"><strong>{{ $message->fname }} {{ $message->lname }}</strong></a>
+                                                            @else
+                                                            <strong class="text-primary">{{ $message->name }}</strong>
+                                                            @endif
+                                                            <span class="communication-contact">{{ $message->contact }}</span></td>
+                                                        <td>{{ date('F j, Y', strtotime($message->sent_at)) }}<br>
+                                                            @if ($message->status == "Sent")
+                                                            <span class="badge badge-success">Sent</span>
+                                                            @else
+                                                            <span class="badge badge-danger">Failed</span>
+                                                            @endif
+                                                            @if ($message->type == "sms")
+                                                            <span class="badge badge-primary">SMS</span>
+                                                            @else
+                                                            <span class="badge badge-secondary">Email</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ( strlen($message->message) > 50 )
+                                                            {{ substr($message->message,0,50).'...'; }}
+                                                            @else
+                                                            {{ $message->message; }}
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-primary btn-sm btn-icon fetch-display-click" data="messageid:{{ $message->id }}|type:{{ $type }}|csrf-token:{{ csrf_token() }}" url="<?=url('Communication@read');?>" holder=".message-holder" modal="#read" loader="true"><i class=" mdi mdi-email-outline"></i>  Read Message</button>
+                                                            <button class="btn btn-danger btn-sm send-to-server-click" data="messageid:{{ $message->id }}|type:{{ $type }}|csrf-token:{{ csrf_token() }}" url="{{ url('Communication@delete') }}" loader="true"><i class="mdi mdi-delete"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                            <tr><th colspan="7"><p class="text-muted text-center">It's empty here.</p></th></tr>
+                                            @endif
+             
+                                            </tbody>
+                                        </table>
+                        </div>
+                        </div>
+                </div>
+            </div>
+
+        
+        </div>
+    </div>
+
+    <!-- footer -->
+   @include("includes/footer")
+
+
+
+    <!-- Send Email-->
+    <div class="modal right fade" id="sendemail" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Send Email</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="simcy-form" data-parsley-validate="" action="{{ url('Communication@email') }}" method="POST" loader="true">
+                          <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="email">Recipient</label>
+                                    <input type="hidden" value="{{ csrf_token() }}" name="csrf-token">
+                                    <select class="form-control select2" name="recipient">
+                                        <option value="student">All Students</option>
+                                        <option value="staff">All Staff</option>
+                                        <option value="instructor">All Instructors</option>
+                                        <option value="branches">All Branches</option>
+                                        @if( $user->role == "superadmin" )
+                                        <option value="schools">All Schools</option>
+                                        @endif
+                                        <option value="everyone">All Users</option>
+                                        @if(!empty($users))
+                                        @foreach($users as $account)
+                                         <option value="{{ $account->id }}">{{$account->fname}} {{$account->lname}} ( {{$account->role}} )</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Subject</label>
+                                    <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                                </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Message</label>
+                                    <textarea class="form-control" placeholder="Message" rows="6" name="message" required=""></textarea>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-block" type="submit">Send Email</button>
+                                </div>
+                            </div>
+                          </div>
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end Send Email-->
+
+    <!-- Send SMS-->
+    <div class="modal right fade" id="sendsms" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                        <h4 class="modal-title" id="myModalLabel2">Send SMS</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <form class="simcy-form" data-parsley-validate="" action="{{ url('Communication@sms') }}" method="POST" loader="true">
+                          <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="email">Recipient</label>
+                                    <input type="hidden" value="{{ csrf_token() }}" name="csrf-token">
+                                    <select class="form-control select2" name="recipient">
+                                        <option value="student">All Students</option>
+                                        <option value="staff">All Staff</option>
+                                        <option value="instructor">All Instructors</option>
+                                        <option value="branches">All Branches</option>
+                                        @if( $user->role == "superadmin" )
+                                        <option value="schools">All Schools</option>
+                                        @endif
+                                        <option value="everyone">Everyone</option>
+                                        @if(!empty($users))
+                                        @foreach($users as $account)
+                                         <option value="{{ $account->id }}">{{$account->fname}} {{$account->lname}} ( {{$account->role}} )</option>
+                                        @endforeach
+                                    @endif
+                                    </select>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Message</label>
+                                    <textarea class="form-control" placeholder="Message" rows="6" name="message" required=""></textarea>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-block" type="submit">Send SMS</button>
+                                </div>
+                            </div>
+                          </div>
+                        </form>
+                    </div>
+
+                </div><!-- modal-content -->
+            </div><!-- modal-dialog -->
+        </div>
+    <!-- end SMS-->
+
+
+<!-- read -->
+<div class="modal right fade" id="read" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle-outline"></i></span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Read Message</h4>
+                </div>
+                <div class="message-holder"></div>
+
+
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div>
+<!-- end read -->
+
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.flash.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.print.min.js"></script>
+    @if(!empty($messages))
+    <script>
+        $(document).ready(function() {
+            $('#data-table').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5'
+                ]
+            });
+        });
+    </script>
+    @endif
+   <script src="{{ url('') }}assets/js/popper.min.js"></script>
+   <script src="{{ url('') }}assets/libs/bootstrap/js/bootstrap.min.js"></script>
+   <script src="{{ url('') }}assets/libs/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+   <script src="{{ url('') }}assets/js/simcify.min.js"></script>
+   <script src="{{ url('') }}assets/js/app.js"></script>
+</body>
+</html>

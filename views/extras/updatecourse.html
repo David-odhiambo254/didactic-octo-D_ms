@@ -1,0 +1,99 @@
+
+                <div class="modal-body">
+                    <form class="simcy-form" action="{{ url('Course@update') }}"  data-parsley-validate="" method="POST" loader="true">
+                        <p>Create a new course.</p>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                              <label>Cover Image</label>
+                              <input type="file" name="image" class="croppie" placeholder="Course Cover Image" crop-width="400" crop-height="190" accept="image/*" default="{{ url('') }}uploads/courses/{{ $course->image }}">
+
+                              <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                              <input type="hidden" name="courseid" value="{{ $course->id }}">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Course Name</label>
+                            <input type="text" name="name" class="form-control" value="{{ $course->name }}" placeholder="Course Name" required="">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>Price ({{ currency() }})</label>
+                            <input type="number" name="price" class="form-control" value="{{ $course->price }}" placeholder="Price" min="0" required="">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-6">
+                              <label>Duration</label>
+                              <input type="number" name="duration" class="form-control" value="{{ $course->duration }}" min="0" placeholder="Duration" required="">
+                          </div>
+                          <div class="col-md-6">
+                              <label>Period</label>
+                              <select name="period" class="form-control" required="">
+                                  <option value="Days" @if( !empty( $course->period == "Days" ) ) selected @endif>Days</option>
+                                  <option value="Weeks" @if( !empty( $course->period == "Weeks" ) ) selected @endif>Weeks</option>
+                                  <option value="Months" @if( !empty( $course->period == "Months" ) ) selected @endif >Months</option>
+                              </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>No. of Practical Classes</label>
+                            <input type="number" name="practical_classes" value="{{ $course->practical_classes }}" min="0" class="form-control" placeholder="No. of Practical Classes">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label>No. of Theory Classes</label>
+                            <input type="number" name="theory_classes" value="{{ $course->theory_classes }}" min="0" class="form-control" placeholder="No. of Theory Classes">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label for="email">Instructors</label>
+                            <select class="form-control select2-dynamic" name="instructors[]" multiple="">
+                                @foreach($instructors as $instructor)
+                                <option value="{{ $instructor->id }}" @if( in_array($instructor->id, $instructorsIds) ) selected @endif>{{$instructor->fname}} {{$instructor->lname}}</option>
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <label for="email">Status</label>
+                            <select class="form-control" name="status">
+                                <option value="Available" @if( !empty( $course->status == "Available" ) ) selected @endif >Available</option>
+                                <option value="Unavailable" @if( !empty( $course->status == "Unavailable" ) ) selected @endif >Unavailable</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <button class="btn btn-primary btn-block" type="submit">Save Changes</button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                </div>
+                <script type="text/javascript">
+                  croppify();
+                  $(".select2-dynamic").select2();
+                </script>
